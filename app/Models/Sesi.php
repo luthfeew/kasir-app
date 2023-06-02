@@ -10,7 +10,7 @@ class Sesi extends Model
     use HasFactory;
 
     protected $fillable = [
-        'mulai',
+        'status',
         'selesai',
         'user_id',
     ];

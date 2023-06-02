@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sesis', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('mulai');
+            $table->enum('status', ['aktif', 'selesai'])->default('aktif');
             $table->dateTime('selesai');
             $table->timestamps();
             $table->softDeletes();
