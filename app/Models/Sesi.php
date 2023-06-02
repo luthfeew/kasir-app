@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Sesi extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'mulai',
+        'selesai',
+        'user_id',
+    ];
 }

@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('sesis', function (Blueprint $table) {
             $table->id();
+            $table->dateTime('mulai');
+            $table->dateTime('selesai');
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::table('sesis', function (Blueprint $table) {
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
         });
     }
 

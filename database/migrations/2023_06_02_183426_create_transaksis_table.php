@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
+            $table->enum('status', ['baru', 'diproses', 'dikirim', 'selesai', 'dibatalkan']);
+            $table->decimal('harga_total', 15, 0);
+            $table->string('nama_pembeli');
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::table('transaksis', function (Blueprint $table) {
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
         });
     }
 

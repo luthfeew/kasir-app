@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('produk_grosirs', function (Blueprint $table) {
             $table->id();
+            $table->integer('kelipatan');
+            $table->decimal('harga', 15, 0);
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::table('produk_grosirs', function (Blueprint $table) {
+            $table->foreignId('produk_id')->constrained()->cascadeOnDelete();
         });
     }
 

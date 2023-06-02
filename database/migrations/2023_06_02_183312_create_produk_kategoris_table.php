@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('produk_kategoris', function (Blueprint $table) {
             $table->id();
+            $table->string('nama')->unique();
+            $table->integer('urutan');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

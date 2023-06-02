@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('transaksi_details', function (Blueprint $table) {
             $table->id();
+            $table->integer('jumlah');
+            $table->decimal('harga', 15, 0);
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::table('transaksi_details', function (Blueprint $table) {
+            $table->foreignId('produk_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('transaksi_id')->constrained()->cascadeOnDelete();
         });
     }
 
