@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProdukKategoriController;
+use App\Http\Controllers\ProdukController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,11 +33,6 @@ Route::middleware(['auth'])->group(function () {
         return view('laporan.ringkasan_penjualan');
     });
 
-    Route::get('/gudang/produk', function () {
-        return view('gudang.produk');
-    });
-
-    Route::get('/gudang/kategori', function () {
-        return view('gudang.kategori');
-    });
+    Route::resource('gudang/kategori', ProdukKategoriController::class);
+    Route::resource('gudang/produk', ProdukController::class);
 });

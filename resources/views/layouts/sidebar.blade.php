@@ -75,8 +75,8 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                <li class="nav-item @if(Request::segment(1) == 'gudang') menu-open @endif">
+                    <a href="#" class="nav-link @if(Request::segment(1) == 'gudang') active @endif">
                         <i class="nav-icon fas fa-warehouse"></i>
                         <p>
                             Gudang
@@ -85,13 +85,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="/gudang/produk" class="nav-link">
+                            <a href="{{ route('produk.index') }}" class="nav-link @if(Request::segment(2) == 'produk') active @endif">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Produk</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/gudang/kategori" class="nav-link">
+                            <a href="{{ route('kategori.index') }}" class="nav-link @if(Request::segment(2) == 'kategori') active @endif">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Kategori</p>
                             </a>
