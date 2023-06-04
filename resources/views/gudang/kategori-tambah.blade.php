@@ -41,13 +41,19 @@
             <form method="post" action="{{ route('kategori.store') }}">
                 @csrf
                 <div class="card-body">
-                    <div class="form-group">
-                        <label for="nama">Nama Kategori</label>
-                        <input name="nama" value="{{ old('nama') }}" type="text" class="form-control" id="nama" placeholder="Masukkan Nama Kategori" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="urutan">Urutan</label>
-                        <input name="urutan" value="{{ old('urutan') }}" type="number" class="form-control" id="urutan" placeholder="Masukkan Urutan" required>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label for="nama">Nama Kategori</label>
+                                <input name="nama" value="{{ old('nama') }}" type="text" class="form-control" id="nama" placeholder="Masukkan Nama Kategori" required>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label for="urutan">Urutan</label>
+                                <input name="urutan" value="{{ old('urutan') }}" type="number" class="form-control" id="urutan" placeholder="Masukkan Urutan" required>
+                            </div>
+                        </div>
                     </div>
                     @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible">

@@ -52,7 +52,7 @@
                         <tr>
                             <th>Urutan</th>
                             <th>Nama</th>
-                            <!-- <th>Produk Terdaftar</th> -->
+                            <th>Produk Terdaftar</th>
                             <th>#</th>
                         </tr>
                     </thead>
@@ -61,7 +61,7 @@
                         <tr>
                             <td>{{ $value->urutan }}</td>
                             <td>{{ $value->nama }}</td>
-                            <!-- <td></td> -->
+                            <td>{{ $value->produk->count() }}</td>
                             <td>
                                 <a href="{{ route('kategori.edit', $value->id) }}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
                                 <form action="{{ route('kategori.destroy', $value->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus item ini?')">
@@ -77,7 +77,7 @@
                         <tr>
                             <th>Urutan</th>
                             <th>Nama</th>
-                            <!-- <th>Produk Terdaftar</th> -->
+                            <th>Produk Terdaftar</th>
                             <th>#</th>
                         </tr>
                     </tfoot>
