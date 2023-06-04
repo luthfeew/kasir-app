@@ -35,12 +35,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Buat sesi baru cek apakah user saat ini ada sesi yang aktif jika ada maka abaikan jika tidak ada maka buat sesi baru
-            $sesi = Sesi::where('user_id', Auth::user()->id)->where('status', 'aktif')->first();
+            // Buat sesi baru cek apakah user saat ini ada sesi yang 'aktif' atau 'mulai' jika ada maka abaikan jika tidak ada maka buat sesi baru
+            $sesi = Sesi::where('user_id', Auth::user()->id)->where('status', 'aktif')->orWhere('status', 'mulai')->first();
             if (!$sesi) {
                 Sesi::create([
                     'user_id' => Auth::user()->id,
-                    'selesai' => now()->endOfDay(),
                 ]);
             }
 
@@ -58,13 +57,12 @@ class LoginController extends Controller
     public function logout(Request $request): RedirectResponse
     {
         // Cek apakah user saat ini ada sesi yang aktif jika ada maka ubah status sesi menjadi selesai
-        $sesi = Sesi::where('user_id', Auth::user()->id)->where('status', 'aktif')->first();
-        if ($sesi) {
-            $sesi->update([
-                'status' => 'selesai',
-                'selesai' => now(),
-            ]);
-        }
+        // $sesi = Sesi::where('user_id', Auth::user()->id)->where('status', 'aktif')->first();
+        // if ($sesi) {
+        //     $sesi->update([
+        //         'status' => 'selesai',
+        //     ]);
+        // }
 
         Auth::logout();
 

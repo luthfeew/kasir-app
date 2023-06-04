@@ -14,5 +14,6 @@ class TransaksiDetail extends Model
         'produk_id',
         'jumlah',
         'harga',
+        'grosir',
     ];
 }

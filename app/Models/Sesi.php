@@ -11,7 +11,10 @@ class Sesi extends Model
 
     protected $fillable = [
         'status',
-        'selesai',
+        'waktu_mulai',
+        'waktu_selesai',
+        'saldo_awal',
+        'saldo_akhir',
         'user_id',
     ];
 }

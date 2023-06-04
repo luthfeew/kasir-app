@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('sesis', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['aktif', 'selesai'])->default('aktif');
-            $table->dateTime('selesai');
+            $table->enum('status', ['aktif', 'mulai', 'selesai'])->default('aktif');
+            $table->dateTime('waktu_mulai')->nullable();
+            $table->dateTime('waktu_selesai')->nullable();
+            $table->decimal('saldo_awal', 15, 0)->nullable();
+            $table->decimal('saldo_akhir', 15, 0)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

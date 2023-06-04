@@ -22,6 +22,9 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+
+                <!-- Check if user latest status in sesi = aktif -->
+                @if (Auth::user()->sesi->last()->status == 'mulai')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cash-register"></i>
@@ -98,25 +101,31 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item">
+                @endif
+
+                <!-- <li class="nav-header">LAINNYA</li> -->
+                <!-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>Pengaturan</p>
                     </a>
-                </li>
-                <li class="nav-header">LAINNYA</li>
+                </li> -->
+
+                @if (Auth::user()->sesi->last()->status == 'mulai')
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-door-open"></i>
-                        <p>Buka Kasir</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('tutup_kasir') }}" class="nav-link">
                         <i class="nav-icon fas fa-door-closed"></i>
                         <p>Tutup Kasir</p>
                     </a>
                 </li>
+                @else
+                <li class="nav-item">
+                    <a href="{{ route('buka_kasir') }}" class="nav-link">
+                        <i class="nav-icon fas fa-door-open"></i>
+                        <p>Buka Kasir</p>
+                    </a>
+                </li>
+                @endif
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="nav-icon fas fa-sign-out-alt"></i>

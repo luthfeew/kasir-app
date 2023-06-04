@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('jumlah');
             $table->decimal('harga', 15, 0);
+            $table->boolean('grosir')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
