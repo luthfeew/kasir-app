@@ -18,4 +18,14 @@ class Produk extends Model
         'satuan',
         'produk_kategori_id',
     ];
+
+    public function kategori()
+    {
+        return $this->belongsTo(ProdukKategori::class, 'produk_kategori_id');
+    }
+
+    public function grosir()
+    {
+        return $this->hasMany(ProdukGrosir::class, 'produk_id');
+    }
 }

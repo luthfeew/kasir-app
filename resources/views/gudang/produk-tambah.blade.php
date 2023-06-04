@@ -36,6 +36,7 @@
             <form method="post" action="{{ route('produk.store') }}">
                 @csrf
                 <div class="card-body">
+                    <h4 class="bg-primary">Detail Produk</h4>
                     <div class="row">
                         <div class="col-8">
                             <div class="form-group">
@@ -73,6 +74,7 @@
                             </div>
                         </div>
                     </div>
+                    <h4 class="mt-3 bg-primary">Detail Tambahan</h4>
                     <div class="row">
                         <div class="col-4">
                             <div class="form-group">
@@ -90,6 +92,49 @@
                             <div class="form-group">
                                 <label for="satuan">Satuan</label>
                                 <input name="satuan" value="{{ old('satuan') }}" type="text" class="form-control" id="satuan" placeholder="Masukkan Satuan" required>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="mt-3 bg-primary">Grosir (opsional)</h4>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="kelipatan1">Kelipatan</label>
+                                <input name="kelipatan1" value="{{ old('kelipatan1') }}" type="number" class="form-control" id="kelipatan1" placeholder="Masukkan Kelipatan">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="harga1">Harga Grosir (Rp)</label>
+                                <input name="harga1" value="{{ old('harga1') }}" type="number" class="form-control" id="harga1" placeholder="Masukkan Harga Grosir">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="kelipatan2">Kelipatan</label>
+                                <input name="kelipatan2" value="{{ old('kelipatan2') }}" type="number" class="form-control" id="kelipatan2" placeholder="Masukkan Kelipatan">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="harga2">Harga Grosir (Rp)</label>
+                                <input name="harga2" value="{{ old('harga2') }}" type="number" class="form-control" id="harga2" placeholder="Masukkan Harga Grosir">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="kelipatan3">Kelipatan</label>
+                                <input name="kelipatan3" value="{{ old('kelipatan3') }}" type="number" class="form-control" id="kelipatan3" placeholder="Masukkan Kelipatan">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="harga3">Harga Grosir (Rp)</label>
+                                <input name="harga3" value="{{ old('harga3') }}" type="number" class="form-control" id="harga3" placeholder="Masukkan Harga Grosir">
                             </div>
                         </div>
                     </div>

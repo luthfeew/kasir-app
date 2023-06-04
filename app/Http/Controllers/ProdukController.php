@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use App\Models\Produk;
 use App\Models\ProdukKategori;
+use App\Models\ProdukGrosir;
 
 class ProdukController extends Controller
 {
@@ -31,6 +33,7 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate(
             [
                 'nama' => 'required|unique:produks,nama',
@@ -57,7 +60,29 @@ class ProdukController extends Controller
             ]
         );
 
-        Produk::create($request->all());
+        $produk = Produk::create($request->all());
+
+        // get kelipatan1, keliapatan2, kelipatan3 and convert it to single array
+        $kelipatan = array($request->kelipatan1, $request->kelipatan2, $request->kelipatan3);
+        $harga = array($request->harga1, $request->harga2, $request->harga3);
+        // pair array kelipatan and harga
+        $x = array_combine($kelipatan, $harga);
+        // remove array with empty key or value
+        $x = Arr::where($x, function ($value, $key) {
+            return $key != null && $value != null;
+        });
+        // unpair array kelipatan and harga
+        $kelipatan = array_keys($x);
+        $harga = array_values($x);
+
+        // save to produk_grosir table
+        for ($i = 0; $i < count($kelipatan); $i++) {
+            ProdukGrosir::create([
+                'produk_id' => $produk->id,
+                'kelipatan' => $kelipatan[$i],
+                'harga' => $harga[$i],
+            ]);
+        }
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan');
     }
@@ -67,7 +92,8 @@ class ProdukController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data = Produk::find($id);
+        return view('gudang.produk-detail', compact('data'));
     }
 
     /**
@@ -77,7 +103,8 @@ class ProdukController extends Controller
     {
         $data = Produk::find($id);
         $kategori = ProdukKategori::all();
-        return view('gudang.produk-edit', compact('data', 'kategori'));
+        $grosir = ProdukGrosir::where('produk_id', $id)->get();
+        return view('gudang.produk-edit', compact('data', 'kategori', 'grosir'));
     }
 
     /**
@@ -111,7 +138,30 @@ class ProdukController extends Controller
             ]
         );
 
-        Produk::find($id)->update($request->all());
+        $produk = Produk::find($id)->update($request->all());
+
+        // get kelipatan1, keliapatan2, kelipatan3 and convert it to single array
+        $kelipatan = array($request->kelipatan1, $request->kelipatan2, $request->kelipatan3);
+        $harga = array($request->harga1, $request->harga2, $request->harga3);
+        // pair array kelipatan and harga
+        $x = array_combine($kelipatan, $harga);
+        // remove array with empty key or value
+        $x = Arr::where($x, function ($value, $key) {
+            return $key != null && $value != null;
+        });
+        // unpair array kelipatan and harga
+        $kelipatan = array_keys($x);
+        $harga = array_values($x);
+        // remove all data in produk_grosir table
+        ProdukGrosir::where('produk_id', $id)->delete();
+        // save to produk_grosir table
+        for ($i = 0; $i < count($kelipatan); $i++) {
+            ProdukGrosir::create([
+                'produk_id' => $id,
+                'kelipatan' => $kelipatan[$i],
+                'harga' => $harga[$i],
+            ]);
+        }
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diubah');
     }
@@ -123,6 +173,9 @@ class ProdukController extends Controller
     {
         $data = Produk::find($id);
         $data->delete();
+        
+        // also delete data in produk_grosir table
+        ProdukGrosir::where('produk_id', $id)->delete();
 
         return redirect()->route('produk.index')->with('success', 'Data berhasil dihapus');
     }

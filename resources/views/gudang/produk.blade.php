@@ -67,6 +67,7 @@
                             <td>{{ $value->harga_jual }}</td>
                             <td>{{ $value->stok }}</td>
                             <td>
+                                <!-- <a href="{{ route('produk.show', $value->id) }}" class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a> -->
                                 <a href="{{ route('produk.edit', $value->id) }}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
                                 <form action="{{ route('produk.destroy', $value->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus item ini?')">
                                     @csrf
