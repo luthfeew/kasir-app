@@ -24,7 +24,8 @@
                with font-awesome or any other icon font library -->
 
                 <!-- Check if user latest status in sesi = aktif -->
-                @if (Auth::user()->sesi->last()->status == 'mulai')
+                <!-- Cek jika ada sesi dengan user id saat ini -->
+                @if (Auth::user()->sesi()->where('status', 'mulai')->whereDate('waktu_mulai', now())->first())
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cash-register"></i>
@@ -111,7 +112,7 @@
                     </a>
                 </li> -->
 
-                @if (Auth::user()->sesi->last()->status == 'mulai')
+                @if (Auth::user()->sesi()->where('status', 'mulai')->whereDate('waktu_mulai', now())->first())
                 <li class="nav-item">
                     <a href="{{ route('tutup_kasir') }}" class="nav-link">
                         <i class="nav-icon fas fa-door-closed"></i>

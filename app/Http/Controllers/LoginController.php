@@ -36,12 +36,12 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             // Buat sesi baru cek apakah user saat ini ada sesi yang 'aktif' atau 'mulai' jika ada maka abaikan jika tidak ada maka buat sesi baru
-            $sesi = Sesi::where('user_id', Auth::user()->id)->where('status', 'aktif')->orWhere('status', 'mulai')->first();
-            if (!$sesi) {
-                Sesi::create([
-                    'user_id' => Auth::user()->id,
-                ]);
-            }
+            // $sesi = Sesi::where('user_id', Auth::user()->id)->where('status', 'aktif')->orWhere('status', 'mulai')->first();
+            // if (!$sesi) {
+            //     Sesi::create([
+            //         'user_id' => Auth::user()->id,
+            //     ]);
+            // }
 
             return redirect()->intended('dashboard');
         }

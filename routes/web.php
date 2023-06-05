@@ -22,11 +22,8 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('login.aut
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
-    // Route::get('/', function () {
-    //     return view('test');
-    // });
-
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
+
     Route::get('/buka_kasir', [HomeController::class, 'buka_kasir'])->name('buka_kasir');
     Route::post('/buka_kasir', [HomeController::class, 'buka_kasir_store'])->name('buka_kasir.store');
     Route::get('/tutup_kasir', [HomeController::class, 'tutup_kasir'])->name('tutup_kasir');

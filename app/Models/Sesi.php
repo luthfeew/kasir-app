@@ -17,4 +17,14 @@ class Sesi extends Model
         'saldo_akhir',
         'user_id',
     ];
+
+    protected $casts = [
+        'waktu_mulai' => 'datetime',
+        'waktu_selesai' => 'datetime',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
