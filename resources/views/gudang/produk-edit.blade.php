@@ -2,24 +2,25 @@
 
 @section('css')
 <!-- Select2 -->
-<!-- <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css')}}">
-<link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}"> -->
+<link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css')}}">
+<link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
 @endsection
 
 @section('js')
 <!-- Select2 -->
-<!-- <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
+<script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
 <script>
     $(function() {
-        //Initialize Select2 Elements
-        $('.select2').select2()
-
         //Initialize Select2 Elements
         $('.select2bs4').select2({
             theme: 'bootstrap4'
         })
+
+        $('#produk_kategori_id').select2({
+            placeholder: "Pilih Kategori"
+        });
     })
-</script> -->
+</script>
 @endsection
 
 @section('breadcrumb')
@@ -31,7 +32,7 @@
 <div class="row">
     <div class="col-sm-12">
 
-        <div class="card">
+        <div class="card card-primary card-outline">
 
             <form method="post" action="{{ route('produk.update', $data->id) }}">
                 @csrf
@@ -48,8 +49,8 @@
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <label>Pilih Kategori</label>
-                                <select name="produk_kategori_id" class="form-control" required>
-                                    <option value="">Pilih Kategori</option>
+                                <select id="produk_kategori_id" name="produk_kategori_id" class="form-control select2bs4" style="width: 100%;" required>
+                                    <option></option>
                                     @foreach($kategori as $k)
                                     @if($k->id == $data->produk_kategori_id)
                                     <option value="{{ $k->id }}" selected>{{ $k->nama }}</option>
@@ -101,13 +102,13 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="kelipatan1">Kelipatan</label>
-                                <input name="kelipatan1" value="{{ $grosir[0]['kelipatan'] ?? null }}" type="number" class="form-control" id="kelipatan1" placeholder="Masukkan Kelipatan">
+                                <input name="kelipatan[1]" value="{{ $grosir[0]['kelipatan'] ?? null }}" type="number" class="form-control" id="kelipatan1" placeholder="Masukkan Kelipatan">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="harga1">Harga Grosir (Rp)</label>
-                                <input name="harga1" value="{{ $grosir[0]['harga'] ?? null }}" type="number" class="form-control" id="harga1" placeholder="Masukkan Harga Grosir">
+                                <input name="harga[1]" value="{{ $grosir[0]['harga'] ?? null }}" type="number" class="form-control" id="harga1" placeholder="Masukkan Harga Grosir">
                             </div>
                         </div>
                     </div>
@@ -115,13 +116,13 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="kelipatan2">Kelipatan</label>
-                                <input name="kelipatan2" value="{{ $grosir[1]['kelipatan'] ?? null }}" type="number" class="form-control" id="kelipatan2" placeholder="Masukkan Kelipatan">
+                                <input name="kelipatan[2]" value="{{ $grosir[1]['kelipatan'] ?? null }}" type="number" class="form-control" id="kelipatan2" placeholder="Masukkan Kelipatan">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="harga2">Harga Grosir (Rp)</label>
-                                <input name="harga2" value="{{ $grosir[1]['harga'] ?? null }}" type="number" class="form-control" id="harga2" placeholder="Masukkan Harga Grosir">
+                                <input name="harga[2]" value="{{ $grosir[1]['harga'] ?? null }}" type="number" class="form-control" id="harga2" placeholder="Masukkan Harga Grosir">
                             </div>
                         </div>
                     </div>
@@ -129,13 +130,13 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="kelipatan3">Kelipatan</label>
-                                <input name="kelipatan3" value="{{ $grosir[2]['kelipatan'] ?? null }}" type="number" class="form-control" id="kelipatan3" placeholder="Masukkan Kelipatan">
+                                <input name="kelipatan[3]" value="{{ $grosir[2]['kelipatan'] ?? null }}" type="number" class="form-control" id="kelipatan3" placeholder="Masukkan Kelipatan">
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label for="harga3">Harga Grosir (Rp)</label>
-                                <input name="harga3" value="{{ $grosir[2]['harga'] ?? null }}" type="number" class="form-control" id="harga3" placeholder="Masukkan Harga Grosir">
+                                <input name="harga[3]" value="{{ $grosir[2]['harga'] ?? null }}" type="number" class="form-control" id="harga3" placeholder="Masukkan Harga Grosir">
                             </div>
                         </div>
                     </div>
@@ -152,7 +153,7 @@
                     @endif
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
                     <button type="reset" class="btn btn-secondary">Reset</button>
                 </div>
             </form>

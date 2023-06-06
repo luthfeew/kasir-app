@@ -40,7 +40,7 @@
 @section('content')
 <div class="row">
     <div class="col">
-        <div class="card">
+        <div class="card card-primary card-outline">
 
             <div class="card-header">
                 <a href="{{ route('produk.create') }}" type="button" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Produk</a>

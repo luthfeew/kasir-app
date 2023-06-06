@@ -36,7 +36,7 @@
 <div class="row">
     <div class="col-12">
 
-        <div class="card">
+        <div class="card card-primary card-outline">
 
             <form method="post" action="{{ route('kategori.update', $data->id) }}">
                 @csrf

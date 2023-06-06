@@ -4,7 +4,7 @@
 <div class="row">
 
     <div class="col-sm">
-        <div class="card card-primary">
+        <div class="card card-primary card-outline">
             <div class="card-header">
                 <h3 class="card-title">Status Kasir</h3>
                 <div class="card-tools">

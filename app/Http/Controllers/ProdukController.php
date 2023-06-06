@@ -62,11 +62,8 @@ class ProdukController extends Controller
 
         $produk = Produk::create($request->all());
 
-        // get kelipatan1, keliapatan2, kelipatan3 and convert it to single array
-        $kelipatan = array($request->kelipatan1, $request->kelipatan2, $request->kelipatan3);
-        $harga = array($request->harga1, $request->harga2, $request->harga3);
-        // pair array kelipatan and harga
-        $x = array_combine($kelipatan, $harga);
+        // get kelipatan dan harga
+        $x = array_combine($request->kelipatan, $request->harga);
         // remove array with empty key or value
         $x = Arr::where($x, function ($value, $key) {
             return $key != null && $value != null;
@@ -138,13 +135,10 @@ class ProdukController extends Controller
             ]
         );
 
-        $produk = Produk::find($id)->update($request->all());
+        Produk::find($id)->update($request->all());
 
-        // get kelipatan1, keliapatan2, kelipatan3 and convert it to single array
-        $kelipatan = array($request->kelipatan1, $request->kelipatan2, $request->kelipatan3);
-        $harga = array($request->harga1, $request->harga2, $request->harga3);
-        // pair array kelipatan and harga
-        $x = array_combine($kelipatan, $harga);
+        // get kelipatan dan harga
+        $x = array_combine($request->kelipatan, $request->harga);
         // remove array with empty key or value
         $x = Arr::where($x, function ($value, $key) {
             return $key != null && $value != null;
@@ -152,6 +146,7 @@ class ProdukController extends Controller
         // unpair array kelipatan and harga
         $kelipatan = array_keys($x);
         $harga = array_values($x);
+
         // remove all data in produk_grosir table
         ProdukGrosir::where('produk_id', $id)->delete();
         // save to produk_grosir table
@@ -173,7 +168,7 @@ class ProdukController extends Controller
     {
         $data = Produk::find($id);
         $data->delete();
-        
+
         // also delete data in produk_grosir table
         ProdukGrosir::where('produk_id', $id)->delete();
 

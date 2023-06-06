@@ -36,7 +36,7 @@
 <div class="row">
     <div class="col-12">
 
-        <div class="card">
+        <div class="card card-primary card-outline">
 
             <form method="post" action="{{ route('kategori.store') }}">
                 @csrf
@@ -68,7 +68,7 @@
                     @endif
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-primary">Tambah</button>
                     <button type="reset" class="btn btn-secondary">Reset</button>
                 </div>
             </form>
