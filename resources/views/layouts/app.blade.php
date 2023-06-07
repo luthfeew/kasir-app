@@ -14,6 +14,8 @@
   @yield('css')
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
+  <!-- Livewire -->
+  @livewireStyles
 </head>
 
 <body class="hold-transition sidebar-mini sidebar-collapse">
@@ -68,6 +70,8 @@
   <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
   <!-- Custom JS -->
   @yield('js')
+  <!-- Livewire -->
+  @livewireScripts
 </body>
 
 </html>

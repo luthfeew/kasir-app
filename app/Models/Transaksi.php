@@ -12,7 +12,17 @@ class Transaksi extends Model
     protected $fillable = [
         'status',
         'harga_total',
-        'nama_pembeli',
+        'nama_pelanggan',
         'user_id',
     ];
+
+    public function transaksiDetail()
+    {
+        return $this->hasMany(TransaksiDetail::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

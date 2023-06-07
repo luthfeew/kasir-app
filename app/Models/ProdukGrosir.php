@@ -14,4 +14,9 @@ class ProdukGrosir extends Model
         'harga',
         'produk_id',
     ];
+
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class);
+    }
 }

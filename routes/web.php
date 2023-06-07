@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProdukKategoriController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\KasirController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/buka_kasir', [HomeController::class, 'buka_kasir_store'])->name('buka_kasir.store');
     Route::get('/tutup_kasir', [HomeController::class, 'tutup_kasir'])->name('tutup_kasir');
     Route::post('/tutup_kasir', [HomeController::class, 'tutup_kasir_store'])->name('tutup_kasir.store');
+
+    Route::get('/kasir', [KasirController::class, 'index'])->name('kasir');
 
     Route::get('/penjualan', function () {
         return view('penjualan.index');

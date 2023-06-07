@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transaksi_details', function (Blueprint $table) {
             $table->id();
             $table->integer('jumlah');
-            $table->decimal('harga', 15, 0);
+            // $table->decimal('harga', 15, 0);
             $table->boolean('grosir')->default(false);
             $table->timestamps();
             $table->softDeletes();

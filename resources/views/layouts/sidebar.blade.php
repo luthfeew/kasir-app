@@ -13,7 +13,7 @@
                 <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">Owner</a>
+                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
             </div>
         </div>
 
@@ -23,11 +23,10 @@
                 <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
 
-                <!-- Check if user latest status in sesi = aktif -->
                 <!-- Cek jika ada sesi dengan user id saat ini -->
                 @if (Auth::user()->sesi()->where('status', 'mulai')->whereDate('waktu_mulai', now())->first())
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('kasir') }}" class="nav-link">
                         <i class="nav-icon fas fa-cash-register"></i>
                         <p>Kasir</p>
                     </a>
