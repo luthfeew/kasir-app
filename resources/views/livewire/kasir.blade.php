@@ -1,85 +1,56 @@
 <div>
     <div class="card-body">
 
-        <!-- <table class="table table-borderless table-sm">
-            <tr>
-                <td style="width: 150px">No Transaksi:</td>
-                <td>{{ $transaksi->id }}</td>
-            </tr>
-            <tr>
-            <td style="width: 150px">Nama Pelanggan:</td>
-            <td>-</td>
-        </tr>
-        </table> -->
-
         <p>
-            No Transaksi: {{ $transaksi->id }}<br>
-            Nama Pelanggan: -
+            No Transaksi: {{ $transaksi->id }} <br>
+            Kasir: {{ $transaksi->user->name }} <br>
+            Nama Pelanggan: - <br>
         </p>
 
         <!-- {{ $transaksi }} -->
 
         <div class="table-responsive">
-            <table class="table table-sm table-bordered table-hover text-nowrap">
+            <table class="table table-hover text-nowrap">
                 <thead>
                     <tr>
-                        <th>QTY</th>
+                        <th>#</th>
                         <th>Nama</th>
+                        <th>QTY</th>
                         <th>Harga</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($transaksi->transaksiDetail as $item)
                     <tr>
-                        <td>{{ $item->jumlah }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->produk->nama }}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-3">
+                                    <input type="text" class="form-control form-control-sm" value="{{ $item->jumlah }}">
+                                </div>
+                            </div>
+                        </td>
                         <td>{{ $item->produk->harga_jual * $item->jumlah }}</td>
                     </tr>
                     @endforeach
                 </tbody>
-                <!-- <tfoot>
+                <tfoot>
                     <tr>
-                        <td colspan="2">sad</td>
+                        <td class="text-right" colspan="3">Total Harga</td>
+                        <td>
+                            @php
+                            $hargaTotal = 0;
+                            foreach ($transaksi->transaksiDetail as $item) {
+                            $hargaTotal += $item->jumlah * $item->produk->harga_jual;
+                            }
+                            @endphp
+                            {{ $hargaTotal }}
+                        </td>
                     </tr>
-                </tfoot> -->
+                </tfoot>
             </table>
         </div>
-
-        <!-- <table class="table table-borderless table-sm">
-            <tr>
-                <td style="width: 150px">Kasir:</td>
-                <td>{{ $transaksi->user->name }}</td>
-            </tr>
-            <tr>
-                <td style="width: 150px">Subtotal:</td>
-                <td>{{ $transaksi->transaksiDetail->sum('jumlah') }}</td>
-            </tr>
-            <tr>
-                <td style="width: 150px">Harga Total:</td>
-                <td>
-                    @php
-                    $hargaTotal = 0;
-                    foreach ($transaksi->transaksiDetail as $item) {
-                    $hargaTotal += $item->jumlah * $item->produk->harga_jual;
-                    }
-                    @endphp
-                    {{ $hargaTotal }}
-                </td>
-            </tr>
-        </table> -->
-
-        <p>
-            Kasir: {{ $transaksi->user->name }}<br>
-            Subtotal: {{ $transaksi->transaksiDetail->sum('jumlah') }}<br>
-            Harga Total:
-            @php
-            $hargaTotal = 0;
-            foreach ($transaksi->transaksiDetail as $item) {
-            $hargaTotal += $item->jumlah * $item->produk->harga_jual;
-            }
-            @endphp
-            {{ $hargaTotal }}
-        </p>
 
     </div>
     <div class="card-footer">
