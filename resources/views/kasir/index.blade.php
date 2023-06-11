@@ -35,7 +35,7 @@
             </div>
 
             <livewire:kasir />
-            
+
         </div>
     </div>
 </div>

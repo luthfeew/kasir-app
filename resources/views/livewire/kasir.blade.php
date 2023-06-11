@@ -2,8 +2,8 @@
     <div class="card-body">
 
         <p>
-            No Transaksi: {{ $transaksi->id }} <br>
-            Kasir: {{ $transaksi->user->name }} <br>
+            No Transaksi: {{ $transaksi->id ?? '' }} <br>
+            Kasir: {{ $user_id }} <br>
             Nama Pelanggan: - <br>
         </p>
 
@@ -19,17 +19,31 @@
                         <th>Harga</th>
                     </tr>
                 </thead>
+                @if ($transaksi)
                 <tbody>
                     @foreach ($transaksi->transaksiDetail as $item)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->produk->nama }}</td>
                         <td>
-                            <div class="row">
-                                <div class="col-3">
-                                    <input type="text" class="form-control form-control-sm" value="{{ $item->jumlah }}">
+                            <form>
+                                <div class="d-flex">
+                                    <div class="mr-2"><input type="number" class="form-control form-control-sm" wire:model.lazy="qty.{{$item->id}}" min="1"></div>
+                                    <div><button type="button" class="btn btn-sm btn-primary" wire:click="update({{ $item->id }})"><i class="fas fa-check"></i></button></div>
+                                    <!-- @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    @endif -->
+                                    @error('qty.' . $item->id)
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                            </div>
+                            </form>
                         </td>
                         <td>{{ $item->produk->harga_jual * $item->jumlah }}</td>
                     </tr>
@@ -49,6 +63,7 @@
                         </td>
                     </tr>
                 </tfoot>
+                @endif
             </table>
         </div>
 

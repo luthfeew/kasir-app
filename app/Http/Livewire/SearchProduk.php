@@ -41,9 +41,10 @@ class SearchProduk extends Component
             ]);
         }
 
-        // $this->search = '';
+        $this->search = '';
         // $this->emit('focusInput');
         $this->emit('added');
+        $this->emit('refreshQty');
     }
 
     public function render()
