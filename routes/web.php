@@ -30,7 +30,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tutup_kasir', [HomeController::class, 'tutup_kasir'])->name('tutup_kasir');
     Route::post('/tutup_kasir', [HomeController::class, 'tutup_kasir_store'])->name('tutup_kasir.store');
 
-    Route::get('/kasir', [KasirController::class, 'index'])->name('kasir');
+    Route::get('/kasir/{id?}', [KasirController::class, 'index'])->name('kasir');
+    Route::post('/kasir/bayar/{id?}', [KasirController::class, 'bayar'])->name('kasir.bayar');
+    Route::post('/kasir/simpan/{id?}', [KasirController::class, 'simpan'])->name('kasir.simpan');
+    Route::post('/kasir/hapus/{id?}', [KasirController::class, 'hapus'])->name('kasir.hapus');
 
     Route::get('/penjualan', function () {
         return view('penjualan.index');

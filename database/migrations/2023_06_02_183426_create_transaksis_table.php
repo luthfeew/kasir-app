@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['proses', 'pending', 'selesai', 'batal']);
+            $table->enum('status', ['prioritas', 'proses', 'pending', 'selesai', 'batal']);
             $table->decimal('harga_total', 15, 0)->nullable();
             $table->string('nama_pelanggan')->nullable();
             $table->timestamps();

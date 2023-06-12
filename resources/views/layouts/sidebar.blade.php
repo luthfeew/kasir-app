@@ -26,7 +26,7 @@
                 <!-- Cek jika ada sesi dengan user id saat ini -->
                 @if (Auth::user()->sesi()->where('status', 'mulai')->whereDate('waktu_mulai', now())->first())
                 <li class="nav-item">
-                    <a href="{{ route('kasir') }}" class="nav-link">
+                    <a href="{{ route('kasir') }}" class="nav-link nav-link @if(Request::segment(1) == 'kasir') active @endif">
                         <i class="nav-icon fas fa-cash-register"></i>
                         <p>Kasir</p>
                     </a>
@@ -113,14 +113,14 @@
 
                 @if (Auth::user()->sesi()->where('status', 'mulai')->whereDate('waktu_mulai', now())->first())
                 <li class="nav-item">
-                    <a href="{{ route('tutup_kasir') }}" class="nav-link">
+                    <a href="{{ route('tutup_kasir') }}" class="nav-link @if(Request::segment(1) == 'tutup_kasir') active @endif">
                         <i class="nav-icon fas fa-door-closed"></i>
                         <p>Tutup Kasir</p>
                     </a>
                 </li>
                 @else
                 <li class="nav-item">
-                    <a href="{{ route('buka_kasir') }}" class="nav-link">
+                    <a href="{{ route('buka_kasir') }}" class="nav-link @if(Request::segment(1) == 'buka_kasir') active @endif">
                         <i class="nav-icon fas fa-door-open"></i>
                         <p>Buka Kasir</p>
                     </a>

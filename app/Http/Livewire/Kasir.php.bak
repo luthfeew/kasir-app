@@ -25,7 +25,7 @@ class Kasir extends Component
                 $this->stok[$item->id] = $item->produk->stok;
             }
         }
-    }
+    } 
 
     protected $rules = [
         'qty.*' => 'required|numeric|min:1',
