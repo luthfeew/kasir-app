@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProdukKategoriController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\KasirController;
+use App\Http\Controllers\PenjualanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,9 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kasir/simpan/{id?}', [KasirController::class, 'simpan'])->name('kasir.simpan');
     Route::post('/kasir/hapus/{id?}', [KasirController::class, 'hapus'])->name('kasir.hapus');
 
-    Route::get('/penjualan', function () {
-        return view('penjualan.index');
-    });
+    Route::resource('penjualan', PenjualanController::class);
 
     Route::get('/laporan/ringkasan_penjualan', function () {
         return view('laporan.ringkasan_penjualan');

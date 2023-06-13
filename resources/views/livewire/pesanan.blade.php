@@ -3,11 +3,21 @@
     {{-- $transaksiDetail --}}
 
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col">
             <b>No Transaksi: #{{ $transaksi_id }}</b><br>
             <br>
             <b>Kasir:</b> {{ $kasir }}<br>
-            <b>Nama Pelanggan:</b> Test Pelanggan<br>
+            <b>Waktu:</b> <span wire:ignore id="time"></span><br>
+
+            <form wire:submit.prevent="updateNamaPelanggan()" class="form-inline">
+                <label for="inlineFormInputName2">Nama Pelanggan: </label>
+                <input wire:model.defer="namaPelanggan" oninput="showBtnPelanggan()" type="text" class="form-control form-control-sm ml-2" id="inlineFormInputName2">
+
+                <button id="btn-pelanggan" type="submit" class="d-none btn btn-sm btn-primary ml-2">
+                    <i class="fas fa-check"></i>
+                </button>
+            </form>
+
         </div>
     </div>
 
@@ -31,7 +41,7 @@
                             <div class="d-inline">
                                 <form wire:submit.prevent="updateQty({{$item->id}})" class="form-inline">
                                     <input hidden type="number" wire:model.defer="qty.{{$item->produk_id}}">
-                                    <input wire:model.defer="qty.{{$item->id}}" onchange='showButton(<?php echo $loop->index; ?>)' min="1" type="number" class="form-control form-control-sm mr-1 @error('qty.' . $item->id) is-invalid @enderror">
+                                    <input wire:model.defer="qty.{{$item->id}}" oninput="showButton(<?php echo $loop->index; ?>)" min="1" type="number" class="form-control form-control-sm mr-1 @error('qty.' . $item->id) is-invalid @enderror">
 
                                     <button id="button-{{ $loop->index }}" class="d-none btn btn-sm btn-primary" type="submit">
                                         <i class="fas fa-check"></i>

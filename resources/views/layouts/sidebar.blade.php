@@ -32,7 +32,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/penjualan" class="nav-link">
+                    <a href="/penjualan" class="nav-link @if(Request::segment(1) == 'penjualan') active @endif">
                         <i class="nav-icon fas fa-store"></i>
                         <p>Penjualan</p>
                     </a>

@@ -12,19 +12,17 @@ use App\Models\TransaksiDetail;
 class Pesanan extends Component
 {
     public $transaksi_id;
+    public $namaPelanggan;
     public $qty = [];
-    // public $stok = [];
-    // public $produk_id = [];
-    // public $stok = [];
 
-    // public function mount()
-    // {
-    //     $transaksiDetail = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->get();
-    //     foreach ($transaksiDetail as $item) {
-    //         $this->qty[$item->id] = $item->jumlah;
-    //         $this->stok[$item->id] = $item->produk->stok;
-    //     }
-    // }
+    public function mount()
+    {
+        if (!$this->transaksi_id) {
+            $this->cekTransaksi();
+        }
+        
+        $this->namaPelanggan = Transaksi::find($this->transaksi_id)->nama_pelanggan;
+    }
 
     protected $rules = [
         'qty.*' => 'required|numeric|min:1',
@@ -32,18 +30,14 @@ class Pesanan extends Component
 
     protected $listeners = [
         'tambahProduk' => 'tambahQty',
-        // 'hapusProduk' => 'hapusProduk',
-        // 'tambahQty' => 'tambahQty',
-        // 'kurangQty' => 'kurangQty',
-        // 'selesai' => 'selesai',
     ];
 
     public function render()
     {
         // cek apakah transaksi_id kosong, jika kosong maka jalankan fungsi cekTransaksi()
-        if (!$this->transaksi_id) {
-            $this->cekTransaksi();
-        }
+        // if (!$this->transaksi_id) {
+        //     $this->cekTransaksi();
+        // }
 
         $transaksiDetail = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->get();
         foreach ($transaksiDetail as $item) {
@@ -181,5 +175,13 @@ class Pesanan extends Component
     {
         // hapus transaksi detail where produk_id = $id
         TransaksiDetail::where('produk_id', $id)->delete();
+    }
+
+    public function updateNamaPelanggan()
+    {
+        // update nama pelanggan
+        Transaksi::where('id', $this->transaksi_id)->update([
+            'nama_pelanggan' => $this->namaPelanggan,
+        ]);
     }
 }

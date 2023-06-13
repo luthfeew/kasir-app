@@ -17,7 +17,7 @@
                 @csrf
                 <div class="card-body card-primary card-outline">
                     <div class="form-group">
-                        <label for="saldo_awal">Saldo Awal</label>
+                        <label for="saldo_awal">Saldo Awal (Rp)</label>
                         <input name="saldo_awal" type="number" class="form-control form-control-lg" id="saldo_awal" placeholder="Masukkan Saldo Awal" required>
                     </div>
                 </div>

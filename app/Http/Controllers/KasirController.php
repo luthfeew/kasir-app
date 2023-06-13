@@ -14,6 +14,7 @@ class KasirController extends Controller
     {
         return view('kasir.index', [
             'id' => $id,
+            'transaksi_pending' => Transaksi::where('user_id', Auth::user()->id)->where('status', 'pending')->get(),
         ]);
     }
 
@@ -21,42 +22,34 @@ class KasirController extends Controller
     {
         if ($id) {
             $transaksi = Transaksi::find($id);
-            $transaksi->status = 'selesai';
-            $transaksi->harga_total = $request->harga_total;
-            $transaksi->save();
-
-            // kurangi stok id dari produk_id di transaksi_detail, sebanyak jumlah di transaksi_detail
-            $transaksiDetail = TransaksiDetail::where('transaksi_id', $id)->get();
-            foreach ($transaksiDetail as $item) {
-                $this->kurangiStok($item->produk_id, $item->jumlah);
-            }
         } else {
             $transaksi = Transaksi::where('user_id', Auth::user()->id)->where('status', 'proses')->first();
-            $transaksi->status = 'selesai';
-            $transaksi->harga_total = $request->harga_total;
-            $transaksi->save();
-
-            // kurangi stok id dari produk_id di transaksi_detail, sebanyak jumlah di transaksi_detail
-            $transaksiDetail = TransaksiDetail::where('transaksi_id', $transaksi->id)->get();
-            foreach ($transaksiDetail as $item) {
-                $this->kurangiStok($item->produk_id, $item->jumlah);
-            }
         }
+
+        $this->kurangiStokLogic($transaksi);
+
+        $transaksi->status = 'selesai';
+        $transaksi->harga_total = $request->harga_total;
+        $transaksi->stok_kurang = true;
+        $transaksi->save();
 
         return redirect()->route('kasir');
     }
 
-    public function simpan($id = null)
+    public function simpan(Request $request, $id = null)
     {
         if ($id) {
             $transaksi = Transaksi::find($id);
-            $transaksi->status = 'pending';
-            $transaksi->save();
         } else {
             $transaksi = Transaksi::where('user_id', Auth::user()->id)->where('status', 'proses')->first();
-            $transaksi->status = 'pending';
-            $transaksi->save();
         }
+
+        $this->kurangiStokLogic($transaksi);
+
+        $transaksi->status = 'pending';
+        $transaksi->harga_total = $request->harga_total;
+        $transaksi->stok_kurang = true;
+        $transaksi->save();
 
         return redirect()->route('kasir');
     }
@@ -71,6 +64,16 @@ class KasirController extends Controller
         }
 
         return redirect()->route('kasir');
+    }
+
+    function kurangiStokLogic($transaksi)
+    {
+        if (!$transaksi->stok_kurang) {
+            $transaksiDetail = TransaksiDetail::where('transaksi_id', $transaksi->id)->get();
+            foreach ($transaksiDetail as $item) {
+                $this->kurangiStok($item->produk_id, $item->jumlah);
+            }
+        }
     }
 
     function kurangiStok($id, $qty)

@@ -13,6 +13,7 @@ class Transaksi extends Model
         'status',
         'harga_total',
         'nama_pelanggan',
+        'stok_kurang',
         'user_id',
     ];
 

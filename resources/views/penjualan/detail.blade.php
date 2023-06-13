@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Penjualan'])
+@extends('layouts.app', ['title' => 'Detail Penjualan'])
 
 @section('css')
 <!-- DataTables -->
@@ -27,20 +27,14 @@
             "responsive": true,
             "lengthChange": false,
             "autoWidth": false,
-            "ordering": false,
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        });
     });
 </script>
+@endsection
+
+@section('breadcrumb')
+<li class="breadcrumb-item"><a href="{{ route('penjualan.index') }}">Penjualan</a></li>
 @endsection
 
 @section('content')
@@ -48,47 +42,66 @@
     <div class="col">
 
         <div class="card card-primary card-outline">
-
+            <div class="card-header">
+                <h3 class="card-title">No Transaksi: #{{ $transaksi->id }}</h3>
+            </div>
+            <!-- /.card-header -->
             <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Kode</th>
-                            <th>Nama Pembeli</th>
-                            <th>Total</th>
-                            <th>Waktu</th>
-                            <th>Status</th>
-                            <th>#</th>
+                            <th>No</th>
+                            <th>Nama Barang</th>
+                            <th>Harga Satuan</th>
+                            <th>QTY</th>
+                            <th>Harga Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($transaksis as $transaksi)
+                        @forelse ($transaksiDetail as $item)
                         <tr>
-                            <td>{{ $transaksi->id }}</td>
-                            <td>{{ $transaksi->nama_pelanggan ?? '-' }}</td>
-                            <td>Rp. {{ number_format($transaksi->harga_total, 0, ',', '.') }}</td>
-                            <td>{{ $transaksi->updated_at }}</td>
-                            <td>{{ $transaksi->status }}</td>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $item->produk->nama }}</td>
                             <td>
-                                <a href="{{ route('penjualan.show', $transaksi->id) }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                                @isset ($item->produk->harga_jual_grosir)
+                                @if ($item->produk->harga_jual != $item->produk->harga_jual_grosir)
+                                <del>Rp. {{ number_format($item->produk->harga_jual, 0, ',', '.') }}</del><br>
+                                @endif
+                                Rp. {{ number_format($item->produk->harga_jual_grosir, 0, ',', '.') }}
+                                @else
+                                Rp. {{ number_format($item->produk->harga_jual, 0, ',', '.') }}
+                                @endisset
+
+
+                            </td>
+                            <td>{{ $item->jumlah }}</td>
+                            <td>
+                                @isset ($item->produk->harga_jual_grosir)
+                                Rp. {{ number_format(($item->jumlah * $item->produk->harga_jual_grosir), 0, ',', '.') }}
+                                @else
+                                Rp. {{ number_format(($item->jumlah * $item->produk->harga_jual), 0, ',', '.') }}
+                                @endisset
+                                
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center">Tidak ada data</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
                     <tfoot>
                         <tr>
-                            <th>Kode</th>
-                            <th>Nama Pembeli</th>
-                            <th>Total</th>
-                            <th>Waktu</th>
-                            <th>Status</th>
-                            <th>#</th>
+                            <th>No</th>
+                            <th>Nama Barang</th>
+                            <th>Harga Satuan</th>
+                            <th>QTY</th>
+                            <th>Harga Total</th>
                         </tr>
                     </tfoot>
                 </table>
             </div>
-
+            <!-- /.card-body -->
         </div>
 
     </div>

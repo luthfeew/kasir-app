@@ -24,6 +24,10 @@
         document.getElementById('button-' + index).classList.remove('d-none');
     }
 
+    function showBtnPelanggan() {
+        document.getElementById('btn-pelanggan').classList.remove('d-none');
+    }
+
     function copyHargaTotal() {
         var hargaTotal = document.getElementById('hargaTotal1').innerHTML;
 
@@ -35,6 +39,7 @@
 
         // copy value hargaTotal1 ke hargaTotal3
         document.getElementById('hargaTotal3').value = hargaTotal;
+        document.getElementById('hargaTotal4').value = hargaTotal;
     }
 
     function hitungKembalian() {
@@ -61,6 +66,19 @@
         }
     }
 </script>
+<script>
+    var timeDisplay = document.getElementById("time");
+
+    function refreshTime() {
+        var dateString = new Date().toLocaleString("id-ID", {
+            timeZone: "Asia/Jakarta"
+        });
+        var formattedString = dateString.replace(", ", " - ");
+        timeDisplay.innerHTML = formattedString;
+    }
+
+    setInterval(refreshTime, 1000);
+</script>
 @endsection
 
 @section('content')
@@ -80,6 +98,52 @@
             <div class="card-body">
 
                 <livewire:cari-produk />
+
+            </div>
+        </div>
+
+        <div class="card card-primary card-outline collapsed-card">
+            <div class="card-header">
+                <h3 class="card-title">Transaksi Pending</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body table-responsive p-0">
+
+                <table class="table table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>No Transaksi</th>
+                            <th>Nama Pelanggan</th>
+                            <th>Waktu</th>
+                            <th>Total</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($transaksi_pending as $item)
+                        <tr>
+                            <td>{{ $item->id }}</td>
+                            <td>{{ $item->nama_pelanggan ?? '-' }}</td>
+                            <td>{{ $item->updated_at }}</td>
+                            <td>{{ $item->harga_total ?? '0' }}</td>
+                            <td>
+                                <a href="{{ route('kasir', $item->id) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center">Tidak ada data</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
 
             </div>
         </div>
@@ -106,11 +170,12 @@
                     <i class="far fa-credit-card"></i> Bayar
                 </button>
 
-                <a class="btn btn-primary" href="{{ route('kasir.simpan', $id) }}" onclick="event.preventDefault(); document.getElementById('simpan-form').submit();">
+                <a class="btn btn-primary" href="{{ route('kasir.simpan', $id) }}" onclick="copyHargaTotal(); event.preventDefault(); document.getElementById('simpan-form').submit();">
                     <i class="fas fa-download"></i> Simpan
                 </a>
                 <form id="simpan-form" action="{{ route('kasir.simpan', $id) }}" method="POST" style="display: none;">
                     @csrf
+                    <input type="number" name="harga_total" id="hargaTotal4">
                 </form>
 
                 <a class="btn btn-danger" href="{{ route('kasir.hapus', $id) }}" onclick="event.preventDefault(); document.getElementById('hapus-form').submit();">
@@ -147,10 +212,10 @@
                     </h3>
                 </div>
                 <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
                     <form action="{{ route('kasir.bayar', $id) }}" method="post">
                         @csrf
-                        <input type="number" name="harga_total" id="hargaTotal3">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                        <input hidden type="number" name="harga_total" id="hargaTotal3">
                         <button disabled id="button-bayar" type="submit" class="btn btn-success"><i class="far fa-credit-card"></i> Bayar</button>
                     </form>
                 </div>
