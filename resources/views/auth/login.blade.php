@@ -29,7 +29,7 @@
         <form action="{{ route('login.auth') }}" method="post">
           @csrf
           <div class="input-group mb-3">
-            <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" value="{{ old('username') }}" placeholder="Username" autofocus>
+            <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" value="{{ old('username') }}" placeholder="Username default='admin'" autofocus>
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-user"></span>
@@ -42,7 +42,7 @@
             @enderror
           </div>
           <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password">
+            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password default='123456'">
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-lock"></span>

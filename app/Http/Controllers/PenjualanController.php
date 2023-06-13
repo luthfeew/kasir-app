@@ -7,6 +7,7 @@ use App\Models\Produk;
 use App\Models\ProdukGrosir;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
+use Illuminate\Support\Facades\Auth;
 
 class PenjualanController extends Controller
 {
@@ -15,8 +16,8 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        // get all transaksi where status = selesai, order by created_at desc
-        $transaksis = Transaksi::where('status', 'selesai')->orderBy('created_at', 'desc')->get();
+        // get all transaksi where status = selesai, order by created_at desc, user_id = auth()->user()->id
+        $transaksis = Transaksi::where('status', 'selesai')->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
         
         return view('penjualan.index', compact('transaksis'));
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\ProdukKategoriController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\KaryawanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,4 +45,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('gudang/kategori', ProdukKategoriController::class);
     Route::resource('gudang/produk', ProdukController::class);
+
+    Route::resource('karyawan', KaryawanController::class);
 });

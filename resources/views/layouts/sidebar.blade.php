@@ -103,13 +103,15 @@
                 </li>
                 @endif
 
-                <!-- <li class="nav-header">LAINNYA</li> -->
-                <!-- <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-cog"></i>
-                        <p>Pengaturan</p>
+                <li class="nav-header">LAINNYA</li>
+                @if (Auth::user()->role == 'admin')
+                <li class="nav-item">
+                    <a href="{{ route('karyawan.index') }}" class="nav-link @if(Request::segment(1) == 'karyawan') active @endif">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Karyawan</p>
                     </a>
-                </li> -->
+                </li>
+                @endif
 
                 @if (Auth::user()->sesi()->where('status', 'mulai')->whereDate('waktu_mulai', now())->first())
                 <li class="nav-item">
