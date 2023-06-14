@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        \App\Models\User::factory(9)->create();
+        // \App\Models\User::factory(9)->create();
 
         $this->call(ProdukKategoriSeeder::class);
     }

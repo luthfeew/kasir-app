@@ -8,6 +8,7 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,9 +40,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('penjualan', PenjualanController::class);
 
-    Route::get('/laporan/ringkasan_penjualan', function () {
-        return view('laporan.ringkasan_penjualan');
-    });
+    Route::get('/laporan/ringkasan_penjualan', [LaporanController::class, 'ringkasan_penjualan'])->name('laporan.ringkasan_penjualan');
+    Route::get('/laporan/top_report', [LaporanController::class, 'top_report'])->name('laporan.top_report');
+    Route::get('/laporan/tutup_kasir', [LaporanController::class, 'tutup_kasir'])->name('laporan.tutup_kasir');
+    Route::get('/laporan/kas_kasir', [LaporanController::class, 'kas_kasir'])->name('laporan.kas_kasir');
 
     Route::resource('gudang/kategori', ProdukKategoriController::class);
     Route::resource('gudang/produk', ProdukController::class);
