@@ -48,7 +48,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('laporan.ringkasan_penjualan') }}" class="nav-link @if(Request::segment(2) == 'ringkasan_penjualan') active @endif">
+                            <a href="#" class="nav-link @if(Request::segment(2) == 'ringkasan_penjualan') active @endif">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Ringkasan Penjualan</p>
                             </a>
@@ -60,13 +60,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('laporan.tutup_kasir') }}" class="nav-link @if(Request::segment(2) == 'tutup_kasir') active @endif">
+                            <a href="#" class="nav-link @if(Request::segment(2) == 'tutup_kasir') active @endif">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Tutup Kasir</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('laporan.kas_kasir') }}" class="nav-link @if(Request::segment(2) == 'kas_kasir') active @endif">
+                            <a href="#" class="nav-link @if(Request::segment(2) == 'kas_kasir') active @endif">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Kas Kasir</p>
                             </a>
