@@ -2,24 +2,36 @@
 
 @section('css')
 <!-- daterange picker -->
-<link rel="stylesheet" href="../../plugins/daterangepicker/daterangepicker.css">
+<link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css')}}">
 @endsection
 
 @section('js')
 <!-- InputMask -->
-<script src="../../plugins/moment/moment.min.js"></script>
-<script src="../../plugins/inputmask/jquery.inputmask.min.js"></script>
+<script src="{{ asset('plugins/moment/moment.min.js')}}"></script>
+<script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js')}}"></script>
 <!-- date-range-picker -->
-<script src="../../plugins/daterangepicker/daterangepicker.js"></script>
+<script src="{{ asset('plugins/daterangepicker/daterangepicker.js')}}"></script>
 <!-- ChartJS -->
-<script src="../../plugins/chart.js/Chart.min.js"></script>
+<script src="{{ asset('plugins/chart.js/Chart.min.js')}}"></script>
 
-<!-- Page specific script -->
 <script>
     $(function() {
         //Date range picker
-        $('#reservation').daterangepicker()
+        $('#reservation').daterangepicker({
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+        $('#reservation').on('apply.daterangepicker', function(ev, picker) {
+            // console.log(picker.startDate.format('YYYY-MM-DD'));
+            // console.log(picker.endDate.format('YYYY-MM-DD'));
+
+            // emit to listener setStartDate and setEndDate
+            Livewire.emit('getTanggal', picker.startDate.format('YYYY-MM-DD') + ' ~ ' + picker.endDate.format('YYYY-MM-DD'));
+        });
     })
+</script>
+<script>
     $(function() {
         // Get context with jQuery - using jQuery's .get() method.
         var areaChartCanvas = $('#areaChart').get(0).getContext('2d')
@@ -84,153 +96,16 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <!-- Date range -->
-        <div class="form-group">
-            <label>Date range:</label>
 
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">
-                        <i class="far fa-calendar-alt"></i>
-                    </span>
-                </div>
-                <input type="text" class="form-control float-right" id="reservation">
-            </div>
-            <!-- /.input group -->
-        </div>
-        <!-- /.form group -->
-
-        <!-- AREA CHART -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Area Chart</h3>
-
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            </div>
+        <div class="card card-primary card-outline">
+            <!-- <div class="card-header">
+                <h3 class="card-title">Produk Terlaris</h3>
+            </div> -->
             <div class="card-body">
-                <div class="chart">
-                    <canvas id="areaChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
+
+                <livewire:ringkasan-penjualan />
+
             </div>
-            <!-- /.card-body -->
-        </div>
-        <!-- /.card -->
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Total Penjualan</span>
-                        <span class="info-box-number">1,410</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Laba Kotor</span>
-                        <span class="info-box-number">410</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="info-box-icon bg-warning"><i class="far fa-copy"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Terima Pembayaran</span>
-                        <span class="info-box-number">13,648</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-        </div>
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Refund</span>
-                        <span class="info-box-number">1,410</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Komisi</span>
-                        <span class="info-box-number">410</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-        </div>
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Order / Transaksi</span>
-                        <span class="info-box-number">1,410</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Total Transaksi</span>
-                        <span class="info-box-number">410</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="info-box-icon bg-warning"><i class="far fa-copy"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Total Produk</span>
-                        <span class="info-box-number">13,648</span>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div>
-                <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
         </div>
 
     </div>

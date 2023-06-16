@@ -21,13 +21,7 @@ class LaporanController extends Controller
 
     public function top_report()
     {
-        $data = TransaksiDetail::selectRaw('produk_id, sum(jumlah) as total_qty')
-            ->groupBy('produk_id')
-            ->orderBy('total_qty', 'desc')
-            ->limit(10)
-            ->get();
-
-        return view('laporan.top_report', compact('data'));
+        return view('laporan.top_report');
     }
 
     public function tutup_kasir()
