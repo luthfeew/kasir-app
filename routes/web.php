@@ -46,9 +46,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/laporan/top_report', [LaporanController::class, 'top_report'])->name('laporan.top_report');
     Route::get('/laporan/tutup_kasir', [LaporanController::class, 'tutup_kasir'])->name('laporan.tutup_kasir');
     Route::get('/laporan/kas_kasir', [LaporanController::class, 'kas_kasir'])->name('laporan.kas_kasir');
+    Route::get('/laporan/kas_kasir/create', [LaporanController::class, 'kas_kasir_create'])->name('laporan.kas_kasir.create');
+    Route::post('/laporan/kas_kasir/create', [LaporanController::class, 'kas_kasir_store'])->name('laporan.kas_kasir.store');
 
     Route::resource('gudang/kategori', ProdukKategoriController::class);
     Route::resource('gudang/produk', ProdukController::class);
 
     Route::resource('karyawan', KaryawanController::class);
+
+    Route::post('/test', [LaporanController::class, 'test'])->name('test');
 });
