@@ -27,7 +27,7 @@
             "responsive": true,
             "lengthChange": false,
             "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
 </script>
@@ -43,10 +43,22 @@
 
         <div class="card card-primary card-outline">
             <div class="card-header">
-                <h3 class="card-title">No Transaksi: #{{ $transaksi->id }}</h3>
+                <h3 class="card-title">
+                    @if ($transaksi->status == 'selesai')
+                    Penjualan
+                    @else
+                    Refund
+                    @endif
+                </h3>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
+                <b>No Transaksi: #{{ $transaksi->id }}</b><br>
+                <br>
+                <b>Kasir:</b> {{ $transaksi->user->name }}<br>
+                <b>Waktu:</b> {{ $transaksi->updated_at }}<br>
+                <b>Nama Pelanggan:</b> {{ $transaksi->nama_pelanggan }}<br>
+                <h3>Harga Total:</b> Rp. {{ number_format($transaksi->harga_total, 0, ',', '.') }}</h3>
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
@@ -71,17 +83,14 @@
                                 @else
                                 Rp. {{ number_format($item->produk->harga_jual, 0, ',', '.') }}
                                 @endisset
-
-
                             </td>
-                            <td>{{ $item->jumlah }}</td>
+                            <td>{{ abs($item->jumlah) }}</td>
                             <td>
                                 @isset ($item->produk->harga_jual_grosir)
-                                Rp. {{ number_format(($item->jumlah * $item->produk->harga_jual_grosir), 0, ',', '.') }}
+                                Rp. {{ number_format(abs($item->jumlah * $item->produk->harga_jual_grosir), 0, ',', '.') }}
                                 @else
-                                Rp. {{ number_format(($item->jumlah * $item->produk->harga_jual), 0, ',', '.') }}
+                                Rp. {{ number_format(abs($item->jumlah * $item->produk->harga_jual), 0, ',', '.') }}
                                 @endisset
-                                
                             </td>
                         </tr>
                         @empty
@@ -102,6 +111,15 @@
                 </table>
             </div>
             <!-- /.card-body -->
+            @if($transaksi->refunded || $transaksi->status == 'refund')
+            <div class="card-footer">
+                <b>Transaksi ini sudah pernah direfund</b>
+            </div>
+            @else
+            <div class="card-footer">
+                <a href="{{ route('penjualan.refund', $transaksi->id) }}" class="btn btn-info">Refund</a>
+            </div>
+            @endif
         </div>
 
     </div>

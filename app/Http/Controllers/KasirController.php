@@ -66,17 +66,18 @@ class KasirController extends Controller
         return redirect()->route('kasir');
     }
 
-    function kurangiStokLogic($transaksi)
+    public static function kurangiStokLogic($transaksi)
     {
         if (!$transaksi->stok_kurang) {
             $transaksiDetail = TransaksiDetail::where('transaksi_id', $transaksi->id)->get();
             foreach ($transaksiDetail as $item) {
-                $this->kurangiStok($item->produk_id, $item->jumlah);
+                // $this->kurangiStok($item->produk_id, $item->jumlah);
+                self::kurangiStok($item->produk_id, $item->jumlah);
             }
         }
     }
 
-    function kurangiStok($id, $qty)
+    public static function kurangiStok($id, $qty)
     {
         $produk = Produk::find($id);
         $produk->stok -= $qty;

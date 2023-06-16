@@ -14,7 +14,10 @@ class Transaksi extends Model
         'harga_total',
         'nama_pelanggan',
         'stok_kurang',
+        'refunded',
+        'alasan_refund',
         'user_id',
+        'parent_id',
     ];
 
     public function transaksiDetail()

@@ -13,8 +13,8 @@ class TransaksiDetail extends Model
         'transaksi_id',
         'produk_id',
         'jumlah',
-        // 'harga',
         'grosir',
+        'harga_satuan_refund',
     ];
 
     public function transaksi()

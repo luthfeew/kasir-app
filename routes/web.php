@@ -39,6 +39,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kasir/hapus/{id?}', [KasirController::class, 'hapus'])->name('kasir.hapus');
 
     Route::resource('penjualan', PenjualanController::class);
+    Route::get('/penjualan/{id}/refund', [PenjualanController::class, 'refund'])->name('penjualan.refund');
+    Route::post('/penjualan/{id}/refund', [PenjualanController::class, 'refund_store'])->name('penjualan.refund.store');
 
     Route::get('/laporan/ringkasan_penjualan', [LaporanController::class, 'ringkasan_penjualan'])->name('laporan.ringkasan_penjualan');
     Route::get('/laporan/top_report', [LaporanController::class, 'top_report'])->name('laporan.top_report');

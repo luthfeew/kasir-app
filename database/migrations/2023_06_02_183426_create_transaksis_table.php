@@ -13,16 +13,19 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['proses', 'pending', 'selesai']);
+            $table->enum('status', ['proses', 'pending', 'selesai', 'refund']);
             $table->decimal('harga_total', 15, 0)->nullable();
             $table->string('nama_pelanggan')->nullable();
             $table->boolean('stok_kurang')->default(false);
+            $table->boolean('refunded')->default(false);
+            $table->string('alasan_refund')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
 
         Schema::table('transaksis', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('transaksis')->cascadeOnDelete();
         });
     }
 
