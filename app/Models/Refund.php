@@ -6,18 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProdukKategori extends Model
+class Refund extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'nama',
-        'urutan',
+        'transaksi_id',
+        'alasan',
     ];
 
-    // produk kategori punya banyak produk
-    public function produk()
+    // refund punya satu transaksi
+    public function transaksi()
     {
-        return $this->hasMany(Produk::class);
+        return $this->belongsTo(Transaksi::class);
     }
 }

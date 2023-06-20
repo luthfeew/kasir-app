@@ -4,29 +4,43 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaksi extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'status',
-        'harga_total',
-        'nama_pelanggan',
-        'stok_kurang',
-        'refunded',
-        'alasan_refund',
         'user_id',
-        'parent_id',
+        'kode',
+        'status',
+        'nama_pembeli',
+        'is_counted',
+        'is_hutang',
+        'is_refunded',
     ];
 
-    public function transaksiDetail()
+    // transaksi punya satu user
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // transaksi punya banyak transaksi detail
+    public function transaksi_detail()
     {
         return $this->hasMany(TransaksiDetail::class);
     }
 
-    public function user()
+    // transaksi punya satu bayar
+    public function bayar()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOne(Bayar::class);
+    }
+
+    // transaksi punya satu refund
+    public function refund()
+    {
+        return $this->hasOne(Refund::class);
     }
 }

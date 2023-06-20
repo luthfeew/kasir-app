@@ -14,14 +14,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         \App\Models\User::factory()->create([
-            'nama' => 'Test Admin',
+            'name' => 'Test Admin',
             'username' => 'admin',
             'password' => Hash::make('123456'),
             'role' => 'admin',
         ]);
 
-        \App\Models\User::factory(9)->create();
+        // \App\Models\User::factory(9)->create();
 
-        // $this->call(ProdukKategoriSeeder::class);
+        $this->call(ProdukKategoriSeeder::class);
     }
 }

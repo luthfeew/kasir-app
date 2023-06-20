@@ -4,19 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sesi extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'status',
         'waktu_mulai',
         'waktu_selesai',
         'saldo_awal',
         'saldo_akhir',
+        'user_id',
     ];
 
     protected $casts = [
@@ -24,7 +23,6 @@ class Sesi extends Model
         'waktu_selesai' => 'datetime',
     ];
 
-    // sesi punya satu user
     public function user()
     {
         return $this->belongsTo(User::class);

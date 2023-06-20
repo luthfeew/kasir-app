@@ -4,19 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProdukGrosir extends Model
+class TransaksiDetail extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
+        'transaksi_id',
         'produk_id',
-        'minimal',
-        'harga_grosir',
+        'jumlah',
+        'grosir',
+        'harga_satuan_refund',
     ];
 
-    // produk_grosir punya satu produk
+    public function transaksi()
+    {
+        return $this->belongsTo(Transaksi::class);
+    }
+
     public function produk()
     {
         return $this->belongsTo(Produk::class);
