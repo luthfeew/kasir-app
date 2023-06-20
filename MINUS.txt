@@ -1,0 +1,38 @@
+===
+Transaksi pending hapus bug
+
+-ringkasan penjualan
+terima pembayaran = total penjualan - refund + (-hutang)
+===
+
+MENU LAPORAN
+= tambaih utang
+- filter nama = selama ana hutang muncul
+- Tabel nama pembeli, tanggal, total pembelian, jumlah hutang, aksi show
+
+RINGKASAN PENJUALAN
+bonus grafik total omset x hari
+- rentang = mingguan, bulanan, tahunan
+mingguan = 7 hari kebelakang
+bulanan = 4 minggu kebelakang
+tahunan = 12 bulan kebelakang
+
+
+TUTUP KASIR (per user per sesi)
+modal awal = input saldo awal
+total penjualan = total penjualan
+
+kas masuk = saldo awal + uang masuk 
+kas keluar = uang keluar
+refund = refund
+saldo akhir = terima pembayaran + kas masuk - kas keluar + (-hutang)
+
+transaksi selesai = jumlah transaksi kelar
+transaksi belum selesai = jumlah transaksi pending
+transaksi hutang = jumlah transaksi hutang
+
+KAS KASIR
+refund = refund
+hutang = hutang di sesi itu
+total kas kasir = modal awal + kas masuk + terima pembayaran
+
