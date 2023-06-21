@@ -74,7 +74,6 @@
                     </ul>
                 </li>
                 @endif
-                @endif
                 <li class="nav-item @if(Request::segment(1) == 'gudang') menu-open @endif">
                     <a href="#" class="nav-link @if(Request::segment(1) == 'gudang') active @endif">
                         <i class="nav-icon fas fa-warehouse"></i>
@@ -98,7 +97,9 @@
                         </li>
                     </ul>
                 </li>
-                
+                @endif
+
+                <li class="nav-header">LAINNYA</li>
                 @if (Auth::user()->role == 'admin')
                 <li class="nav-item">
                     <a href="{{ route('karyawan.index') }}" class="nav-link @if(Request::segment(1) == 'karyawan') active @endif">
@@ -108,7 +109,6 @@
                 </li>
                 @endif
 
-                <li class="nav-header">LAINNYA</li>
                 @if (Auth::user()->sesi()->where('status', 'mulai')->whereDate('waktu_mulai', now())->first())
                 <li class="nav-item">
                     <a href="{{ route('tutup_kasir') }}" class="nav-link @if(Request::segment(1) == 'tutup_kasir') active @endif">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ProdukKategori;
+use App\Models\Produk;
 
 class ProdukKategoriController extends Controller
 {
@@ -13,7 +14,7 @@ class ProdukKategoriController extends Controller
     public function index()
     {
         $data = ProdukKategori::all();
-        return view('gudang.kategori', compact('data'));
+        return view('gudang.kategori.index', compact('data'));
     }
 
     /**
@@ -21,7 +22,7 @@ class ProdukKategoriController extends Controller
      */
     public function create()
     {
-        return view('gudang.kategori-tambah');
+        //
     }
 
     /**
@@ -29,25 +30,7 @@ class ProdukKategoriController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(
-            [
-                'nama' => 'required|unique:produk_kategoris,nama',
-                'urutan' => 'required|numeric',
-            ],
-            [
-                'nama.required' => 'Nama kategori harus diisi',
-                'nama.unique' => 'Nama kategori sudah ada',
-                'urutan.required' => 'Urutan kategori harus diisi',
-                'urutan.numeric' => 'Urutan kategori harus berupa angka',
-            ]
-        );
-
-        ProdukKategori::create([
-            'nama' => $request->nama,
-            'urutan' => $request->urutan,
-        ]);
-
-        return redirect()->route('kategori.index')->with('success', 'Berhasil menambahkan kategori produk.');
+        //
     }
 
     /**
@@ -63,8 +46,7 @@ class ProdukKategoriController extends Controller
      */
     public function edit(string $id)
     {
-        $data = ProdukKategori::find($id);
-        return view('gudang.kategori-edit', compact('data'));
+        //
     }
 
     /**
@@ -72,17 +54,7 @@ class ProdukKategoriController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'nama' => 'required|unique:produk_kategoris,nama,' . $id,
-            'urutan' => 'required|numeric',
-        ]);
-
-        $data = ProdukKategori::find($id);
-        $data->nama = $request->nama;
-        $data->urutan = $request->urutan;
-        $data->save();
-
-        return redirect()->route('kategori.index')->with('success', 'Berhasil mengubah kategori produk.');
+        //
     }
 
     /**
@@ -90,9 +62,6 @@ class ProdukKategoriController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = ProdukKategori::find($id);
-        $data->delete();
-
-        return redirect()->route('kategori.index')->with('success', 'Data berhasil dihapus');
+        //
     }
 }

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="row">
-    <div class="col">
+    <div class="col-sm">
 
         <x-card title="Status Kasir">
             @if ($sesi)
