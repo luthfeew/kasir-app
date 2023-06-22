@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
 
         // DEBUGGING ONLY
         \App\Models\User::factory(9)->create();
-        $this->call(ProdukKategoriSeeder::class);
-        \App\Models\Produk::factory(100)->create();
-        $this->call(ProdukGrosirSeeder::class);
+        // $this->call(ProdukKategoriSeeder::class);
+        // \App\Models\Produk::factory(100)->create();
+        // $this->call(ProdukGrosirSeeder::class);
     }
 }

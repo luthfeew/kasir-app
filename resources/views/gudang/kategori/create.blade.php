@@ -14,8 +14,8 @@
             <x-card title="Tambah Kategori Produk">
 
                 <div class="row">
-                    <div class="col"><x-input name="nama" label="Nama Kategori" type="text" /></div>
-                    <div class="col"><x-input name="urutan" label="Urutan" type="number" /></div>
+                    <div class="col-md"><x-input name="nama" label="Nama Kategori" type="text" /></div>
+                    <div class="col-md"><x-input name="urutan" label="Urutan" type="number" /></div>
                 </div>
 
                 <x-slot name="footer">

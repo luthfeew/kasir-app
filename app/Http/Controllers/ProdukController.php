@@ -24,7 +24,7 @@ class ProdukController extends Controller
      */
     public function create()
     {
-        $kategori = ProdukKategori::all();
+        $kategori = ProdukKategori::all()->pluck('nama', 'id');
         return view('gudang.produk.create', compact('kategori'));
     }
 
@@ -44,11 +44,14 @@ class ProdukController extends Controller
             [
                 'nama' => 'required|unique:produks,nama',
                 'sku' => 'required|unique:produks,sku',
-                'stok' => 'required|numeric',
-                'harga_beli' => 'required|numeric',
-                'harga_jual' => 'required|numeric',
+                'stok' => 'required|numeric|min:1',
+                'harga_beli' => 'required|numeric|min:1',
+                'harga_jual' => 'required|numeric|gt:harga_beli',
                 'satuan' => 'required',
                 'produk_kategori_id' => 'required',
+                'harga_pelanggan' => 'nullable|numeric|gt:harga_beli',
+                'minimal.*' => 'nullable|numeric|min:1',
+                'grosir.*' => 'nullable|numeric|gt:harga_beli|lt:harga_jual',
             ],
             [
                 'nama.required' => 'Nama produk harus diisi',
@@ -57,12 +60,22 @@ class ProdukController extends Controller
                 'sku.unique' => 'SKU produk sudah ada',
                 'stok.required' => 'Stok produk harus diisi',
                 'stok.numeric' => 'Stok produk harus berupa angka',
+                'stok.min' => 'Stok produk minimal 1',
                 'harga_beli.required' => 'Harga beli produk harus diisi',
                 'harga_beli.numeric' => 'Harga beli produk harus berupa angka',
+                'harga_beli.min' => 'Harga beli produk minimal 1',
                 'harga_jual.required' => 'Harga jual produk harus diisi',
                 'harga_jual.numeric' => 'Harga jual produk harus berupa angka',
+                'harga_jual.gt' => 'Harga jual produk harus lebih besar dari harga beli',
                 'satuan.required' => 'Satuan produk harus diisi',
                 'produk_kategori_id.required' => 'Kategori produk harus diisi',
+                'harga_pelanggan.numeric' => 'Harga pelanggan produk harus berupa angka',
+                'harga_pelanggan.gt' => 'Harga pelanggan produk harus lebih besar dari harga beli',
+                'minimal.*.numeric' => 'Minimal grosir produk harus berupa angka',
+                'minimal.*.min' => 'Minimal grosir produk minimal 1',
+                'grosir.*.numeric' => 'Harga grosir produk harus berupa angka',
+                'grosir.*.gt' => 'Harga grosir produk harus lebih besar dari harga beli',
+                'grosir.*.lt' => 'Harga grosir produk harus lebih kecil dari harga jual',
             ]
         );
 

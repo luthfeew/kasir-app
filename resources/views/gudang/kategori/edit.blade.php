@@ -15,8 +15,8 @@
             <x-card title="Edit Kategori Produk">
 
                 <div class="row">
-                    <div class="col"><x-input name="nama" label="Nama Kategori" type="text" :value="$data->nama" /></div>
-                    <div class="col"><x-input name="urutan" label="Urutan" type="number" :value="$data->urutan" /></div>
+                    <div class="col-md"><x-input name="nama" label="Nama Kategori" type="text" :value="$data->nama" /></div>
+                    <div class="col-md"><x-input name="urutan" label="Urutan" type="number" :value="$data->urutan" /></div>
                 </div>
 
                 <x-slot name="footer">
