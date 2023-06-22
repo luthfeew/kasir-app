@@ -9,12 +9,11 @@
     <div class="col">
 
         <x-card title="Daftar Kategori Produk">
-
-            <!-- TODO: CREATE COMPONENT -->
+            
             <x-button-add link="{{ route('kategori.create') }}" label="Tambah Kategori Produk" />
 
             <x-data-tables :kolomTabel="['Urutan', 'Nama', 'Produk Terdaftar', 'Aksi']">
-                @foreach ($data as $item)
+                @forelse ($data as $item)
                 <tr>
                     <td>{{ $item->urutan }}</td>
                     <td>{{ $item->nama }}</td>
@@ -24,7 +23,11 @@
                         <x-button-delete link="{{ route('kategori.destroy', $item->id) }}" />
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="4" class="text-center">Tidak ada data</td>
+                </tr>
+                @endforelse
             </x-data-tables>
 
         </x-card>

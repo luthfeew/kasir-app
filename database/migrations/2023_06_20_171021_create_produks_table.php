@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('produks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('produk_kategori_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('produk_kategori_id')->nullable()->constrained()->nullOnDelete();
             $table->string('nama')->unique();
             $table->string('sku')->unique();
             $table->decimal('harga_beli', 15, 0);
             $table->decimal('harga_jual', 15, 0);
+            $table->decimal('harga_pelanggan', 15, 0)->nullable();
             $table->string('satuan');
             $table->timestamps();
             $table->softDeletes();

@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProdukKategori>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Pelanggan>
  */
-class ProdukKategoriFactory extends Factory
+class PelangganFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,8 +17,7 @@ class ProdukKategoriFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama' => $this->faker->unique()->word(),
-            'urutan' => $this->faker->unique()->numberBetween(1, 100),
+            //
         ];
     }
 }

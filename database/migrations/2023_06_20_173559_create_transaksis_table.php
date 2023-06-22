@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('pelanggan_id')->nullable()->constrained()->nullOnDelete();
             $table->string('kode');
             $table->enum('status', ['proses', 'selesai', 'pending', 'hutang', 'refund'])->default('proses');
             $table->string('nama_pembeli')->nullable();

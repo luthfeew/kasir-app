@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventaris', function (Blueprint $table) {
+        Schema::create('pelanggans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('produk_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('transaksi_id')->nullable()->constrained()->nullOnDelete();
-            $table->integer('stok');
+            $table->string('nama');
+            $table->string('alamat');
+            $table->string('telepon');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventaris');
+        Schema::dropIfExists('pelanggans');
     }
 };

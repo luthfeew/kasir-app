@@ -16,6 +16,7 @@ class Produk extends Model
         'sku',
         'harga_beli',
         'harga_jual',
+        'harga_pelanggan',
         'satuan',
     ];
 
