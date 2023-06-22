@@ -2,10 +2,20 @@
     <label>{{ $label }}</label>
     <select name="{{ $name }}" class="form-control select2 @error($name) is-invalid @enderror" style="width: 100%;">
         <option></option>
-        @foreach ($options as $option)
-        <option value="{{ $option->id }}" {{ $isSelected(old($name, $option->id)) ? 'selected' : '' }}>
-            {{ $option->nama }}
-        </option>
+        @foreach ($options as $key => $value)
+        @if ($selected)
+            @if ($isSelected($key))
+            <option value="{{ $key }}" selected>{{ $value }}</option>
+            @else
+            <option value="{{ $key }}">{{ $value }}</option>
+            @endif
+        @else
+            @if (old($name) == $key)
+            <option value="{{ $key }}" selected>{{ $value }}</option>
+            @else
+            <option value="{{ $key }}">{{ $value }}</option>
+            @endif
+        @endif
         @endforeach
     </select>
     @error($name)
@@ -27,7 +37,7 @@
         //Initialize Select2 Elements
         $('.select2').select2({
             theme: 'bootstrap4',
-            placeholder: "Pilih Kategori",
+            placeholder: "Pilih salah satu",
         })
     })
 </script>
