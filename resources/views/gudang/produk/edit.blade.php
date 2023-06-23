@@ -17,11 +17,7 @@
                 <h4 class="bg-primary">Detail Produk</h4>
                 <div class="row">
                     <div class="col-md"><x-input name="nama" label="Nama Produk" type="text" :value="$data->nama" /></div>
-                    @if ($data->produk_kategori_id)
-                    <div class="col-md-4"><x-select name="produk_kategori_id" label="Kategori" :options="$kategori" :selected="$data->produk_kategori_id" /></div>
-                    @else
-                    <div class="col-md-4"><x-select name="produk_kategori_id" label="Kategori" :options="$kategori" /></div>
-                    @endif
+                    <div class="col-md-4"><x-select name="produk_kategori_id" label="Kategori" :options="$kategori" selected="{{$data->produk_kategori_id}}" /></div>
                 </div>
                 <div class="row">
                     <div class="col-md"><x-input name="sku" label="Nomor SKU" type="text" :value="$data->sku" /></div>
@@ -35,7 +31,7 @@
 
                 <h4 class="bg-primary mt-3">Harga Pelanggan & Grosir (opsional)</h4>
                 <div class="row">
-                    <div class="col-md"><x-input name="harga_pelanggan" label="Harga Pelanggan (Rp)" type="number" :value="$data->harga_pelanggan" /></div>
+                    <div class="col-md"><x-input name="harga_pelanggan" label="Harga Pelanggan (Rp)" type="number" value="{{$data->harga_pelanggan}}" /></div>
                     <div class="col-md"></div>
                     <div class="col-md-3"></div>
                 </div>
@@ -50,11 +46,13 @@
                     <tr>
                         <td><x-input name="minimal[{{ $i }}]" type="number" placeholder="QTY" :value="$item->minimal" /></td>
                         <td><x-input name="grosir[{{ $i }}]" type="number" placeholder="Masukkan Harga" :value="$item->harga_grosir" /></td>
-                        @if ($loop->first)
-                        <td><x-button type="button" class="btn-sm" id="tambah_grosir"><i class="fa fa-plus"></i></x-button></td>
-                        @else
-                        <td><button type="button" class="btn btn-sm btn-danger hapus_input"><i class="fa fa-trash"></i></button></td>
-                        @endif
+                        <td>
+                            @if ($loop->first)
+                            <x-button type="button" class="btn-sm" id="tambah_grosir"><i class="fa fa-plus"></i></x-button>
+                            @else
+                            <button type="button" class="btn btn-sm btn-danger hapus_input"><i class="fa fa-trash"></i></button>
+                            @endif
+                        </td>
                     <tr>
                         @empty
                     <tr>
