@@ -17,7 +17,11 @@
                 <h4 class="bg-primary">Detail Produk</h4>
                 <div class="row">
                     <div class="col-md"><x-input name="nama" label="Nama Produk" type="text" :value="$data->nama" /></div>
+                    @if ($data->produk_kategori_id)
                     <div class="col-md-4"><x-select name="produk_kategori_id" label="Kategori" :options="$kategori" :selected="$data->produk_kategori_id" /></div>
+                    @else
+                    <div class="col-md-4"><x-select name="produk_kategori_id" label="Kategori" :options="$kategori" /></div>
+                    @endif
                 </div>
                 <div class="row">
                     <div class="col-md"><x-input name="sku" label="Nomor SKU" type="text" :value="$data->sku" /></div>

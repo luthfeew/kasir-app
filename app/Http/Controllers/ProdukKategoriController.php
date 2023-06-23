@@ -93,10 +93,10 @@ class ProdukKategoriController extends Controller
      */
     public function destroy(string $id)
     {
-        $produk = Produk::where('produk_kategori_id', $id)->first();
-        if ($produk) {
-            return redirect()->route('kategori.index')->with('danger', 'Kategori tidak bisa dihapus karena masih digunakan');
-        }
+        // $produk = Produk::where('produk_kategori_id', $id)->first();
+        // if ($produk) {
+        //     return redirect()->route('kategori.index')->with('danger', 'Kategori tidak bisa dihapus karena masih digunakan');
+        // }
 
         ProdukKategori::findOrFail($id)->forceDelete();
 
