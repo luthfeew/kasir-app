@@ -7,7 +7,7 @@ use App\Http\Controllers\ProdukKategoriController;
 use App\Http\Controllers\ProdukController;
 // use App\Http\Controllers\KasirController;
 // use App\Http\Controllers\PenjualanController;
-// use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\KaryawanController;
 // use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PelangganController;
 
