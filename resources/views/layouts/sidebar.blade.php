@@ -98,8 +98,14 @@
                         </li>
                     </ul>
                 </li>
-                
+
                 @if (Auth::user()->role == 'admin')
+                <li class="nav-item">
+                    <a href="{{ route('pelanggan.index') }}" class="nav-link @if(Request::segment(1) == 'pelanggan') active @endif">
+                        <i class="nav-icon fas fa-user-tag"></i>
+                        <p>Pelanggan</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{ route('karyawan.index') }}" class="nav-link @if(Request::segment(1) == 'karyawan') active @endif">
                         <i class="nav-icon fas fa-users"></i>

@@ -9,6 +9,7 @@ use App\Http\Controllers\ProdukController;
 // use App\Http\Controllers\PenjualanController;
 // use App\Http\Controllers\KaryawanController;
 // use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\PelangganController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('gudang/produk', ProdukController::class);
 
     Route::resource('karyawan', KaryawanController::class);
+    Route::resource('pelanggan', PelangganController::class);
 
     Route::post('/test', [LaporanController::class, 'test'])->name('test');
 });
