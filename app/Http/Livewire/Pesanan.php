@@ -32,8 +32,16 @@ class Pesanan extends Component
 
     public function render()
     {
+        $transaksiDetail = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->get();
+        // tambah field harga di collection transaksi detail dengan fungsi getHarga()
+        $transaksiDetail->map(function ($item, $key) {
+            $item->harga = self::getHarga($item->produk_id);
+            return $item;
+        });
+
         return view('livewire.pesanan', [
             'transaksi' => Transaksi::find($this->transaksi_id),
+            'transaksiDetail' => $transaksiDetail,
             'daftarPelanggan' => Pelanggan::all()->pluck('nama', 'id'),
         ]);
     }
@@ -102,5 +110,21 @@ class Pesanan extends Component
             $this->pelanggan_id = null;
         }
         Transaksi::where('id', $this->transaksi_id)->update(['pelanggan_id' => $this->pelanggan_id]);
+    }
+
+    public static function getHarga($id)
+    {
+        // cek apakah pelanggan atau bukan, jika pelanggan gunakan harga pelanggan
+        if (Transaksi::find(self::cekTransaksi())->pelanggan_id) {
+            if (Produk::find($id)->harga_pelanggan) {
+                $harga = Produk::find($id)->harga_pelanggan;
+            } else {
+                $harga = Produk::find($id)->harga_jual;
+            }
+        } else {
+            $harga = Produk::find($id)->harga_jual;
+        }
+
+        return $harga;
     }
 }

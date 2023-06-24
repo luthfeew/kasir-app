@@ -23,27 +23,30 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    @json($pelanggan_id)
-                </div>
             </div>
 
+
+            {{$transaksiDetail}}
             <table class="table table-sm mt-3">
                 <thead>
                     <tr>
                         <th>No</th>
                         <th>Nama Produk</th>
+                        <th>Harga Satuan</th>
+                        <th>Harga Spesial</th>
                         <th>QTY</th>
                         <th>Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($transaksi->transaksi_detail as $item)
+                    @forelse ($transaksiDetail as $item)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->produk->nama }}</td>
+                        <td>{{ $item->produk->harga_jual }}</td>
+                        <td>{{ $item->harga }}</td>
                         <td>{{ $item->jumlah_beli }}</td>
-                        <td>{{ $item->produk->harga_jual * $item->jumlah_beli }}</td>
+                        <td>{{ $item->harga * $item->jumlah_beli }}</td>
                     </tr>
                     @empty
                     <tr>
@@ -66,16 +69,16 @@
 @push('js')
 <script src="{{ asset('plugins/select2/js/select2.full.min.js')}}"></script>
 <script>
-    $(document).ready(function() {
-        $('#select2-dropdown').select2({
-            theme: 'bootstrap4',
-            // placeholder: "Pilih Pelanggan",
-        });
-        // $(document).on('change', '#select2-dropdown', function(e) {
-        //     var data = $('#select2-dropdown').select2("val");
-        //     @this.set('pelanggan_id', data);
-        //     Livewire.emit('updatePelanggan');
-        // });
-    });
+    // $(document).ready(function() {
+    //     $('#select2-dropdown').select2({
+    //         theme: 'bootstrap4',
+    //         // placeholder: "Pilih Pelanggan",
+    //     });
+    //     // $(document).on('change', '#select2-dropdown', function(e) {
+    //     //     var data = $('#select2-dropdown').select2("val");
+    //     //     @this.set('pelanggan_id', data);
+    //     //     Livewire.emit('updatePelanggan');
+    //     // });
+    // });
 </script>
 @endpush

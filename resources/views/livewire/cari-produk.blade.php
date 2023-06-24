@@ -43,6 +43,8 @@
         if (event.keyCode === 13) {
             // livewire emit tambahProduk with input value
             Livewire.emit('tambahEnter', this.value);
+            // clear myinput value
+            this.value = '';
         }
     });
 </script>
