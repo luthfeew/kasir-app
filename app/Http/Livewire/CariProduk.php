@@ -11,7 +11,10 @@ class CariProduk extends Component
 {
     public $cari = '';
 
-    protected $listeners = ['tambah'];
+    protected $listeners = [
+        'tambah' => 'tambah',
+        'tambahEnter' => 'tambahEnter',
+    ];
 
     public function render()
     {
@@ -28,6 +31,12 @@ class CariProduk extends Component
     public function tambah($id)
     {
         $this->emit('tambahProduk', $id);
+        $this->cari = '';
+    }
+
+    public function tambahEnter($cari)
+    {
+        $this->emit('tambahProdukEnter', $cari);
         $this->cari = '';
     }
 }
