@@ -14,7 +14,7 @@ class TransaksiDetail extends Model
         'transaksi_id',
         'produk_id',
         'jumlah_beli',
-        'harga_beli',
+        'harga_satuan',
         'harga_total',
     ];
 
