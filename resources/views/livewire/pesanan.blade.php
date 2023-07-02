@@ -18,7 +18,7 @@
 
             <div class="d-flex align-items-center">
                 <div>
-                    <b>Pelanggan: </b>
+                    <b>Nama Pelanggan: </b>
                 </div>
                 <div class="ml-2">
                     <select wire:model="pelanggan_id" wire:change="updatePelanggan()" class="form-control form-control-sm">
@@ -35,7 +35,12 @@
             </div>
 
 
-            {{-- $transaksiDetail --}}
+            {{ $transaksiDetail }}
+            @if ($transaksi->status == 'hutang')
+            <br>
+            <b>Nama: {{ $transaksi->pelanggan->nama ?? $transaksi->nama_pembeli }}</b><br>
+            <b>Hutang: {{ $transaksi->bayar->hutang }}</b><br>
+            @endif
             <table class="table table-sm mt-3">
                 <thead>
                     <tr>
@@ -55,9 +60,9 @@
                         <!-- <td>{{ $item->produk->harga_jual }}</td> -->
                         <td>
                             @if ($item->produk->harga_jual != $item->harga_satuan)
-                            <del>{{ $item->produk->harga_jual }}</del>
+                            <del>@rupiah($item->produk->harga_jual)</del>
                             @endif
-                            {{ $item->harga_satuan }}
+                            @rupiah($item->harga_satuan)
                         </td>
                         <!-- <td>
                             {{ $item->jumlah_beli }}
@@ -91,7 +96,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td>{{ $item->harga_total }}</td>
+                        <td class="text-right">@rupiah($item->harga_total)</td>
                     </tr>
                     @empty
                     <tr>
@@ -100,12 +105,13 @@
                     @endforelse
                 </tbody>
                 <tfoot>
-                    <tr>
-                        <td colspan="4" class="text-right"><b>Total</b></td>
-                        <td><b>{{ $transaksiDetail->sum('harga_total') }}</b></td>
+                    <tr class="text-right">
+                        <td colspan="4"><b>Total</b></td>
+                        <td><b><span id="total">@rupiah($transaksiDetail->sum('harga_total'))</span></b></td>
                     </tr>
                 </tfoot>
             </table>
+
         </div>
     </div>
 </div>

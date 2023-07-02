@@ -11,13 +11,14 @@ class Transaksi extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'parent_id',
         'user_id',
         'pelanggan_id',
         'kode',
         'status',
         'nama_pembeli',
         'is_counted',
-        'is_hutang',
+        'is_melunasi',
         'is_refunded',
     ];
 

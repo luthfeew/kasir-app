@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('parent_id')->nullable()->constrained('transaksis')->nullOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('pelanggan_id')->nullable()->constrained()->nullOnDelete();
             $table->string('kode');
             $table->enum('status', ['proses', 'selesai', 'pending', 'hutang', 'refund'])->default('proses');
             $table->string('nama_pembeli')->nullable();
             $table->boolean('is_counted')->default(false);
-            $table->boolean('is_hutang')->default(false);
+            $table->boolean('is_melunasi')->default(false);
             $table->boolean('is_refunded')->default(false);
             $table->timestamps();
             $table->softDeletes();
