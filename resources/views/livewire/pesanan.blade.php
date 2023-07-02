@@ -7,14 +7,14 @@
             <br>
             <b>Kasir:</b> {{ $transaksi->user->nama }}<br>
 
-            <!-- <form wire:submit.prevent="updateNamaPembeli()" class="form-inline">
+            <form wire:submit.prevent="updateNamaPembeli()" class="form-inline">
                 <label>Nama Pembeli: </label>
-                <input wire:model.defer="namaPembeli" oninput="showBtnPembeli()" type="text" class="form-control form-control-sm ml-2">
+                <input wire:model.defer="namaPembeli" oninput="showBtnPembeli()" type="text" class="form-control form-control-sm ml-2 mr-1">
 
-                <button id="btn-pembeli" type="submit" class="d-none btn btn-sm btn-primary ml-2">
+                <button id="btn-pembeli" type="submit" class="d-none btn btn-sm btn-primary">
                     <i class="fas fa-check"></i>
                 </button>
-            </form> -->
+            </form>
 
             <div class="d-flex align-items-center">
                 <div>

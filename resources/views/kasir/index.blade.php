@@ -21,13 +21,29 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">BAYAR</h4>
+                            <h4 class="modal-title">Bayar</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>One fine body&hellip;</p>
+                            <!-- <p>One fine body&hellip;</p> -->
+                            <!-- <h3>
+                                <small class="text-muted">Total Tagihan:</small>
+                                Rp <span>0</span>
+                            </h3>
+                            <h3>
+                                <small class="text-muted">Bayar:</small>
+                                Rp <input type="number" onkeyup="hitungKembalian()">
+                            </h3>
+                            <h3>
+                                <small class="text-muted">Kembalian:</small>
+                                Rp <span>0</span>
+                            </h3>
+                            <h3>
+                                <small class="text-muted">Hutang:</small>
+                                Rp <span>0</span>
+                            </h3> -->
                         </div>
                         <div class="modal-footer justify-content-between">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
@@ -52,6 +68,9 @@
 <script>
     function showButton(index) {
         document.getElementById('button-' + index).classList.remove('d-none');
+    }
+    function showBtnPembeli() {
+        document.getElementById('btn-pembeli').classList.remove('d-none');
     }
 </script>
 @endpush

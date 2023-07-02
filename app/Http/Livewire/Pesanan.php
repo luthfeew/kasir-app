@@ -15,7 +15,7 @@ class Pesanan extends Component
 {
     public $transaksi_id;
     public $pelanggan_id;
-    // public $namaPembeli;
+    public $namaPembeli;
     public $jumlah_beli = [];
 
     public function mount()
@@ -24,7 +24,7 @@ class Pesanan extends Component
             $this->transaksi_id = $this->cekTransaksi();
         }
         $this->pelanggan_id = Transaksi::find($this->transaksi_id)->pelanggan_id;
-        // $this->namaPembeli = Transaksi::find($this->transaksi_id)->nama_pembeli;
+        $this->namaPembeli = Transaksi::find($this->transaksi_id)->nama_pembeli;
     }
 
     protected $listeners = [
@@ -191,6 +191,11 @@ class Pesanan extends Component
 
         // call refreshHarga() untuk mengupdate harga satuan dan harga total
         $this->refreshHarga();
+    }
+
+    public function updateNamaPembeli()
+    {
+        Transaksi::where('id', $this->transaksi_id)->update(['nama_pembeli' => $this->namaPembeli]);
     }
 
     public static function getHarga($id, $action = null)
