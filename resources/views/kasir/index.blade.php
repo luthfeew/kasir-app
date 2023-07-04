@@ -89,7 +89,9 @@
     <div class="col-xl">
         <x-card title="Transaksi Pending">
 
+            @env('local')
             {{ $transaksi_pending }}
+            @endenv
             <!-- <x-data-tables :kolomTabel="['No', 'Nama', 'Tanggal', 'Total Harga', 'Aksi']">
             @forelse ($transaksi_pending as $item)
             <tr>
@@ -152,7 +154,10 @@
     <div class="col-xl">
         <x-card title="Bayar Hutang">
 
+            @env('local')
             {{ $transaksi_hutang }}
+            @endenv
+
             <!-- <x-data-tables :kolomTabel="['No', 'Nama', 'Tanggal', 'Total Hutang', 'Aksi']">
                 @forelse ($transaksi_hutang as $item)
                 <tr>
