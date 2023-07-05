@@ -16,6 +16,7 @@ class Bayar extends Model
         'bayar',
         'kembalian',
         'hutang',
+        'is_refund',
     ];
 
     // bayar punya satu transaksi

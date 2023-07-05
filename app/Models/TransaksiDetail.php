@@ -16,6 +16,7 @@ class TransaksiDetail extends Model
         'jumlah_beli',
         'harga_satuan',
         'harga_total',
+        'jumlah_refund',
     ];
 
     // transaksi_detail punya satu transaksi

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('jumlah_beli');
             $table->decimal('harga_satuan', 15, 0)->nullable();
             $table->decimal('harga_total', 15, 0)->nullable();
+            $table->integer('jumlah_refund')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

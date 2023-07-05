@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('bayar', 15, 0);
             $table->decimal('kembalian', 15, 0);
             $table->decimal('hutang', 15, 0);
+            $table->boolean('is_refund')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
