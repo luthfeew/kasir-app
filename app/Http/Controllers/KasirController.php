@@ -26,19 +26,35 @@ class KasirController extends Controller
 
     public function index($id = null)
     {
-        // get all transaksi where status = pending
         $transaksi_pending = Transaksi::where('status', 'pending')->get();
-        // get all transaksi where status = hutang and user_id = auth user id
-        $transaksi_hutang = Transaksi::where('status', 'hutang')->get();
+        $transaksi_hutang = Transaksi::where('status', 'hutang')->where('is_melunasi', false)->get();
 
-        // check if $id status is hutang, if hutang then create new transaksi
-        // if ($id) {
-        //     if (Transaksi::find($id)->status == 'hutang') {
-        //         $transaksi = Transaksi::find($id);
-        //         $transaksi->status = 'proses';
-        //         $transaksi->save();
-        //     }
-        // }
+        if ($id) {
+            // cek apakah transaksi hutang atau tidak
+            $transaksi = Transaksi::find($id);
+            if ($transaksi->status == 'hutang') {
+                // cek apakah ada transaksi yang statusnya proses dengan parent_id = $id
+                $ada = Transaksi::where('parent_id', $id)->where('status', 'proses')->first();
+                if ($ada) {
+                    // redirect ke transaksi tersebut
+                    return redirect()->route('kasir', $ada->id);
+                } else {
+                    // buat transaksi baru
+                    $transaksi = Transaksi::create([
+                        'parent_id' => $id,
+                        'user_id' => Auth::user()->id,
+                        'pelanggan_id' => $transaksi->pelanggan_id,
+                        'kode' => 'TRX' . date('YmdHis'),
+                        'status' => 'proses',
+                        'nama_pembeli' => $transaksi->nama_pembeli,
+                        'is_melunasi' => true,
+                    ]);
+
+                    // redirect to kasir with new transaksi id
+                    return redirect()->route('kasir', $transaksi->id);
+                }
+            }
+        }
 
         return view('kasir.index', [
             'id' => $id,
@@ -58,6 +74,13 @@ class KasirController extends Controller
             $transaksi = Transaksi::find($id);
         } else {
             $transaksi = Transaksi::where('user_id', Auth::user()->id)->where('status', 'proses')->first();
+        }
+
+        // if transaksi has parent_id, then update parent_id is_melunasi to true
+        if ($transaksi->parent_id) {
+            $parent = Transaksi::find($transaksi->parent_id);
+            $parent->is_melunasi = true;
+            $parent->save();
         }
 
         self::hitungStokLogic($transaksi);

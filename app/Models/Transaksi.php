@@ -22,6 +22,12 @@ class Transaksi extends Model
         'is_refunded',
     ];
 
+    // transaksi punya satu parent
+    public function parent()
+    {
+        return $this->belongsTo(Transaksi::class);
+    }
+
     // transaksi punya satu user
     public function user()
     {

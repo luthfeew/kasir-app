@@ -7,7 +7,7 @@
             <livewire:cari-produk />
         </x-card>
     </div>
-    <div class="col-xl">
+    <div class="col-xl-8">
         <x-card title="Rincian Pesanan">
             <livewire:pesanan :transaksi_id="$id" />
 
@@ -85,140 +85,56 @@
         </x-card>
     </div>
 </div>
+
 <div class="row">
     <div class="col-xl">
         <x-card title="Transaksi Pending">
-
             @env('local')
             {{ $transaksi_pending }}
             @endenv
-            <!-- <x-data-tables :kolomTabel="['No', 'Nama', 'Tanggal', 'Total Harga', 'Aksi']">
-            @forelse ($transaksi_pending as $item)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>
-                    {{ $item->pelanggan->nama ?? $item->nama_pembeli }}
-                </td>
-                <td>{{ $item->updated_at }}</td>
-                <td>@rupiah($item->total_harga)</td>
-                <td>
-                    <a href="{{ route('kasir', $item->id) }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="5" class="text-center">Tidak ada data</td>
-            </tr>
-            @endforelse
-        </x-data-tables> -->
-            <div class="table-responsive">
-                <table class="table table-hover text-nowrap">
-                    <thead>
-                        <tr>
-                            <th>No Transaksi</th>
-                            <th>Nama Pelanggan</th>
-                            <th>Waktu</th>
-                            <th>Total</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($transaksi_pending as $item)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>
-                                {{ $item->pelanggan->nama ?? $item->nama_pembeli }}
-                            </td>
-                            <td>{{ $item->updated_at }}</td>
-                            <td>@rupiah($item->total_harga)</td>
-                            <td>
-                                <a href="{{ route('kasir', $item->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center">Tidak ada data</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-
         </x-card>
     </div>
     <div class="col-xl">
         <x-card title="Bayar Hutang">
-
             @env('local')
             {{ $transaksi_hutang }}
             @endenv
 
-            <!-- <x-data-tables :kolomTabel="['No', 'Nama', 'Tanggal', 'Total Hutang', 'Aksi']">
-                @forelse ($transaksi_hutang as $item)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>
-                        {{ $item->pelanggan->nama ?? $item->nama_pembeli }}
-                    </td>
-                    <td>{{ $item->updated_at }}</td>
-                    <td>@rupiah($item->bayar->hutang)</td>
-                    <td>
-                        <a href="{{ route('kasir', $item->id) }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center">Tidak ada data</td>
-                </tr>
-                @endforelse
-            </x-data-tables> -->
-
-            <div class="table-responsive">
-                <table class="table table-hover text-nowrap">
-                    <thead>
-                        <tr>
-                            <th>No Transaksi</th>
-                            <th>Nama Pelanggan</th>
-                            <th>Tanggal</th>
-                            <th>Total Hutang</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($transaksi_hutang as $item)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>
-                                {{ $item->pelanggan->nama ?? $item->nama_pembeli }}
-                            </td>
-                            <td>{{ $item->updated_at }}</td>
-                            <td>@rupiah($item->bayar->hutang)</td>
-                            <td>
-                                <a href="{{ route('kasir', $item->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center">Tidak ada data</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No Transaksi</th>
+                        <th>Nama Pelanggan</th>
+                        <th>Tanggal</th>
+                        <th>Total Hutang</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($transaksi_hutang as $item)
+                    <tr>
+                        <td>{{ $item->kode }}</td>
+                        <td>{{ $item->nama_pembeli }}</td>
+                        <td>{{ $item->updated_at }}</td>
+                        <td>@rupiah($item->bayar->hutang)</td>
+                        <td>
+                            <a href="{{ route('kasir', $item->id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada data</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
 
         </x-card>
     </div>
 </div>
+
 @endsection
 
 @push('js')
@@ -236,9 +152,18 @@
     }
 
     function copyTotal() {
+        var hutangSebelumnya = document.getElementById('hutangSebelumnya');
         var tagihan = document.getElementById('total').innerHTML;
-        document.getElementById('tagihan').value = onlyNumber(tagihan);
-        document.getElementById('tagihanView').innerHTML = tagihan;
+        // jika ada elemen hutangSebelumnya maka tambahkan hutangSebelumnya ke tagihan
+        if (hutangSebelumnya != null) {
+            tagihan = parseInt(onlyNumber(tagihan)) + parseInt(hutangSebelumnya.value);
+            document.getElementById('tagihan').value = tagihan;
+            document.getElementById('tagihanView').innerHTML = "Rp " + tagihan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        } else {
+            document.getElementById('tagihan').value = onlyNumber(tagihan);
+            document.getElementById('tagihanView').innerHTML = tagihan;
+        }
+
     }
 
     var bayarView = document.getElementById('bayarView');
@@ -284,20 +209,5 @@
             document.getElementById('hutangView').innerHTML = 0;
         }
     }
-
-    // function hitungKembalian() {
-    //     var tagihan = document.getElementById('tagihan').value;
-    //     var bayar = document.getElementById('bayar').value;
-    //     var kembalian = bayar - tagihan;
-    //     // document.getElementById('kembalian').innerHTML = kembalian;
-    //     // if kembalian < 0, maka hutang = kembalian
-    //     if (kembalian < 0) {
-    //         document.getElementById('kembalian').innerHTML = 0;
-    //         document.getElementById('hutang').innerHTML = Math.abs(kembalian);
-    //     } else {
-    //         document.getElementById('kembalian').innerHTML = kembalian;
-    //         document.getElementById('hutang').innerHTML = 0;
-    //     }
-    // }
 </script>
 @endpush

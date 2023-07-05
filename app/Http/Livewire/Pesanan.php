@@ -76,14 +76,14 @@ class Pesanan extends Component
         return $transaksi->id;
     }
 
-    public static function cekProduk($id)
-    {
-        // cek apakah sudah ada produk di transaksi detail
-        // $produk = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->where('produk_id', $id)->first();
-        $produk = TransaksiDetail::where('transaksi_id', self::cekTransaksi())->where('produk_id', $id)->first();
+    // public static function cekProduk($id)
+    // {
+    //     // cek apakah sudah ada produk di transaksi detail
+    //     // $produk = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->where('produk_id', $id)->first();
+    //     $produk = TransaksiDetail::where('transaksi_id', self::cekTransaksi())->where('produk_id', $id)->first();
 
-        return $produk;
-    }
+    //     return $produk;
+    // }
 
     public function updateQty($id)
     {
@@ -102,7 +102,8 @@ class Pesanan extends Component
         ]);
 
         // cek apakah sudah ada produk di transaksi detail
-        $produk = self::cekProduk($produk_id);
+        // $produk = self::cekProduk($produk_id);
+        $produk = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->where('produk_id', $produk_id)->first();
 
         // jika sudah ada, maka update jumlah beli
         if ($produk) {
@@ -117,8 +118,11 @@ class Pesanan extends Component
     public function tambahProduk($id)
     {
         // cek apakah sudah ada produk di transaksi detail
-        $produk = self::cekProduk($id);
+        // $produk = self::cekProduk($id);
+        $produk = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->where('produk_id', $id)->first();
         $harga_satuan = self::getHarga($id, 'tambah');
+
+        // dd($produk);
 
         // jika sudah ada, maka tambahkan jumlahnya
         if ($produk) {
@@ -145,6 +149,8 @@ class Pesanan extends Component
             ->orWhere('sku', 'like', '%' . $cari . '%')
             ->first();
 
+        // dd($produk);
+
         // jika produk ada, maka tambahkan produk
         if ($produk) {
             $this->tambahProduk($produk->id);
@@ -154,7 +160,8 @@ class Pesanan extends Component
     public function kurangProduk($id)
     {
         // cek apakah sudah ada produk di transaksi detail
-        $produk = self::cekProduk($id);
+        // $produk = self::cekProduk($id);
+        $produk = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->where('produk_id', $id)->first();
         $harga_satuan = self::getHarga($id, 'kurang');
 
         // jika sudah ada, maka kurangi jumlahnya
@@ -174,7 +181,8 @@ class Pesanan extends Component
     public function hapusProduk($id)
     {
         // cek apakah sudah ada produk di transaksi detail
-        $produk = self::cekProduk($id);
+        // $produk = self::cekProduk($id);
+        $produk = TransaksiDetail::where('transaksi_id', $this->transaksi_id)->where('produk_id', $id)->first();
 
         // jika sudah ada, maka hapus produk
         if ($produk) {
@@ -211,12 +219,14 @@ class Pesanan extends Component
             $harga = Produk::find($id)->harga_jual;
         }
 
-        // kalkulasi jumlah beli
-        if (!self::cekProduk($id)) {
-            $jumlah_beli = 0;
-        } else {
-            $jumlah_beli = self::cekProduk($id)->jumlah_beli;
-        }
+        // // kalkulasi jumlah beli
+        // if (!self::cekProduk($id)) {
+        //     $jumlah_beli = 0;
+        // } else {
+        //     $jumlah_beli = self::cekProduk($id)->jumlah_beli;
+        // }
+
+        $jumlah_beli = TransaksiDetail::where('transaksi_id', self::cekTransaksi())->where('produk_id', $id)->sum('jumlah_beli');
 
         if ($action == 'tambah') {
             $jumlah_beli = $jumlah_beli + 1;

@@ -12,7 +12,7 @@
                     <td>{{ $transaksi->kode }}</td>
                     <td>{{ $transaksi->nama_pembeli }}</td>
                     <td>@rupiah($transaksi->bayar->harga_total)</td>
-                    <td>{{ $transaksi->updated_at }}</td>
+                    <td>{{ $transaksi->created_at }}</td>
                     <td>
                         @if ($transaksi->status == 'selesai')
                         <span class="badge badge-success">Selesai</span>
@@ -21,8 +21,10 @@
                         @endif
                     </td>
                     <td>
-                        <x-button-edit link="{{ route('penjualan.edit', $transaksi->id) }}" />
-                        <x-button-delete link="{{ route('penjualan.destroy', $transaksi->id) }}" />
+                        <!-- <x-button-edit link="{{ route('penjualan.edit', $transaksi->id) }}" /> -->
+                        <!-- <x-button-delete link="{{ route('penjualan.destroy', $transaksi->id) }}" /> -->
+                        <x-button-show link="{{ route('penjualan.show', $transaksi->id) }}" />
+                        <a href="{{ route('penjualan.refund', $transaksi->id) }}" class="btn btn-sm btn-danger">Refund</a>
                     </td>
                 </tr>
                 @empty

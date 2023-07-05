@@ -7,6 +7,7 @@
             <br>
             <b>Kasir:</b> {{ $transaksi->user->nama }}<br>
 
+            @if (!$transaksi->pelanggan_id)
             <form wire:submit.prevent="updateNamaPembeli()" class="form-inline">
                 <label>Nama Pembeli: </label>
                 <input wire:model.defer="namaPembeli" oninput="showBtnPembeli()" type="text" class="form-control form-control-sm ml-2 mr-1">
@@ -15,6 +16,7 @@
                     <i class="fas fa-check"></i>
                 </button>
             </form>
+            @endif
 
             <div class="d-flex align-items-center">
                 <div>
@@ -34,13 +36,16 @@
                 </div>
             </div>
 
-
+            @env('local')
             {{ $transaksiDetail }}
-            @if ($transaksi->status == 'hutang')
+            @endenv
+            
+            @if ($transaksi->is_melunasi)
             <br>
-            <b>Nama: {{ $transaksi->pelanggan->nama ?? $transaksi->nama_pembeli }}</b><br>
-            <b>Hutang: {{ $transaksi->bayar->hutang }}</b><br>
+            <span class="bg-warning"><b>Hutang: @rupiah($transaksi->parent->bayar->hutang)</b></span><br>
+            <input type="number" id="hutangSebelumnya" value="{{ $transaksi->parent->bayar->hutang }}">
             @endif
+            
             <table class="table table-sm mt-3">
                 <thead>
                     <tr>
@@ -49,13 +54,15 @@
                         <!-- <th>Harga Satuan</th> -->
                         <th>Harga Satuan</th>
                         <th>QTY</th>
-                        <th>Subtotal</th>
+                        <th class="text-right">Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($transaksiDetail as $item)
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
+                        <td>
+                            {{ $loop->iteration }}
+                        </td>
                         <td>{{ $item->produk->nama }}</td>
                         <!-- <td>{{ $item->produk->harga_jual }}</td> -->
                         <td>
