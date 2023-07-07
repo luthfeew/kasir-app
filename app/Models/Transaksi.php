@@ -18,8 +18,10 @@ class Transaksi extends Model
         'status',
         'nama_pembeli',
         'is_counted',
-        'is_melunasi',
-        'is_refunded',
+        'is_lunas',
+        'is_hutang',
+        'is_refund',
+        'alasan_refund',
     ];
 
     // transaksi punya satu parent

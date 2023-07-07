@@ -17,11 +17,13 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('pelanggan_id')->nullable()->constrained()->nullOnDelete();
             $table->string('kode');
-            $table->enum('status', ['proses', 'selesai', 'pending', 'hutang', 'refund'])->default('proses');
+            $table->enum('status', ['proses', 'selesai', 'pending'])->default('proses');
             $table->string('nama_pembeli')->nullable();
             $table->boolean('is_counted')->default(false);
-            $table->boolean('is_melunasi')->default(false);
-            $table->boolean('is_refunded')->default(false);
+            $table->boolean('is_lunas')->default(false);
+            $table->boolean('is_hutang')->default(false);
+            $table->boolean('is_refund')->default(false);
+            $table->string('alasan_refund')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
