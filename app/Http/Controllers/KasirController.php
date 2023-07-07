@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use App\Models\Bayar;
@@ -26,71 +27,52 @@ class KasirController extends Controller
 
     public function index($id = null)
     {
-        $transaksi_pending = Transaksi::where('status', 'pending')->get();
-        $transaksi_hutang = Transaksi::where('status', 'hutang')->where('is_melunasi', false)->get();
-
-        if ($id) {
-            // cek apakah transaksi hutang atau tidak
-            $transaksi = Transaksi::find($id);
-            if ($transaksi->status == 'hutang') {
-                // cek apakah ada transaksi yang statusnya proses dengan parent_id = $id
-                $ada = Transaksi::where('parent_id', $id)->where('status', 'proses')->first();
-                if ($ada) {
-                    // redirect ke transaksi tersebut
-                    return redirect()->route('kasir', $ada->id);
-                } else {
-                    // buat transaksi baru
-                    $transaksi = Transaksi::create([
-                        'parent_id' => $id,
-                        'user_id' => Auth::user()->id,
-                        'pelanggan_id' => $transaksi->pelanggan_id,
-                        'kode' => 'TRX' . date('YmdHis'),
-                        'status' => 'proses',
-                        'nama_pembeli' => $transaksi->nama_pembeli,
-                        'is_melunasi' => true,
-                    ]);
-
-                    // redirect to kasir with new transaksi id
-                    return redirect()->route('kasir', $transaksi->id);
-                }
-            }
-        }
+        $transaksiPending = Transaksi::where('user_id', Auth::user()->id)->where('status', 'pending')->get();
+        $transaksiHutang = Transaksi::where('is_hutang', true)->where('is_lunas', false)->get();
 
         return view('kasir.index', [
-            'id' => $id,
-            'transaksi_pending' => $transaksi_pending,
-            'transaksi_hutang' => $transaksi_hutang,
+            'transaksiId' => $id,
+            'transaksiPending' => $transaksiPending,
+            'transaksiHutang' => $transaksiHutang,
         ]);
     }
 
-    public function bayar(Request $request, $id = null)
+    public function getTransaksi($id)
     {
-        // dd($request->all());
-        $request->validate([
-            'bayar' => 'required|numeric',
-        ]);
-
         if ($id) {
-            $transaksi = Transaksi::find($id);
+            $transaksi = Transaksi::findOrFail($id);
         } else {
             $transaksi = Transaksi::where('user_id', Auth::user()->id)->where('status', 'proses')->first();
         }
 
-        // if transaksi has parent_id, then update parent_id is_melunasi to true
-        if ($transaksi->parent_id) {
-            $parent = Transaksi::find($transaksi->parent_id);
-            $parent->is_melunasi = true;
+        return $transaksi;
+    }
+
+    public function bayar(Request $request, string $id = null)
+    {
+        // dd($id);
+        // dd($request->all());
+
+        $request->validate([
+            'bayar' => 'required|numeric|min:1',
+            'tagihan' => 'required|numeric|min:1',
+            'kembalian' => 'required|numeric|min:0',
+            'hutang' => 'required|numeric|min:0',
+        ]);
+
+        $transaksi = $this->getTransaksi($id);
+
+        // cek transaksi where id = $parent_id
+        $parent = Transaksi::find($transaksi->parent_id);
+        if ($parent) {
+            $parent->is_lunas = true;
             $parent->save();
         }
 
-        self::hitungStokLogic($transaksi);
-        // $transaksi->status = 'selesai';
-        $transaksi->is_counted = true;
-        if ($request->hutang > 0) {
-            $transaksi->status = 'hutang';
-        } else {
-            $transaksi->status = 'selesai';
-        }
+        $this->hitungStokLogic($transaksi);
+        $transaksi->is_lunas = $request->bayar >= $request->tagihan;
+        $transaksi->is_hutang = $request->bayar < $request->tagihan;
+        $transaksi->status = 'selesai';
         $transaksi->save();
 
         Bayar::create([
@@ -104,18 +86,76 @@ class KasirController extends Controller
         return redirect()->route('kasir')->with('success', 'Transaksi berhasil dibayar.');
     }
 
-    public static function hitungStokLogic($transaksi)
+    public function simpan(string $id = null)
     {
-        if (!$transaksi->is_counted) {
-            $transaksiDetail = TransaksiDetail::where('transaksi_id', $transaksi->id)->get();
-            foreach ($transaksiDetail as $item) {
-                // create new record in inventaris
-                Inventaris::create([
-                    'produk_id' => $item->produk_id,
-                    'transaksi_id' => $item->transaksi_id,
-                    'stok' => -$item->jumlah_beli,
-                ]);
+        $transaksi = $this->getTransaksi($id);
+
+        $this->hitungStokLogic($transaksi);
+        $transaksi->status = 'pending';
+        $transaksi->save();
+
+        return redirect()->route('kasir')->with('success', 'Transaksi berhasil disimpan.');
+    }
+
+    public function hapus(string $id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+        $transaksi->forceDelete();
+
+        return redirect()->route('kasir')->with('success', 'Transaksi berhasil dihapus.');
+    }
+
+    public function bayarHutang(string $id)
+    {
+        // cek apakah ada transaksi dengan status proses dan memiliki transaksi detail, jika ada ubah statusnya menjadi pending
+        $old = Transaksi::where('user_id', Auth::user()->id)->where('status', 'proses')->first();
+        if ($old) {
+            if (TransaksiDetail::where('transaksi_id', $old->id)->count() > 0) {
+                $old->status = 'pending';
+                $old->save();
+            } else {
+                $old->forceDelete();
             }
         }
+
+        // cek apakah ada transaksi dengan parent_id = $id dan status != selesai, jika ada maka redirect ke halaman kasir dengan transaksi tersebut
+        $cek = Transaksi::where('parent_id', $id)->where('status', '!=', 'selesai')->first();
+        // dd($cek);
+        if ($cek) {
+            return redirect()->route('kasir', $cek->id);
+        }
+
+        // buat transaksi baru dengan status proses
+        $transaksi = Transaksi::findOrFail($id);
+        $new = Transaksi::create([
+            'parent_id' => $id,
+            'user_id' => Auth::user()->id,
+            'pelanggan_id' => $transaksi->pelanggan_id,
+            'kode' => 'TRX' . date('ymd') . Str::padLeft(Transaksi::where('user_id', Auth::id())->whereDate('created_at', date('Y-m-d'))->count() + 1, 4, '0'),
+            'status' => 'proses',
+            'nama_pembeli' => $transaksi->nama_pembeli,
+        ]);
+
+        // redirect ke halaman kasir dengan transaksi baru
+        return redirect()->route('kasir', $new->id);
+    }
+
+    public function hitungStokLogic($transaksi)
+    {
+        if ($transaksi->is_counted) {
+            return;
+        }
+
+        $transaksiDetail = TransaksiDetail::where('transaksi_id', $transaksi->id)->get();
+        foreach ($transaksiDetail as $item) {
+            // create new record in inventaris table
+            Inventaris::create([
+                'produk_id' => $item->produk_id,
+                'transaksi_id' => $item->transaksi_id,
+                'stok' => -$item->jumlah_beli,
+            ]);
+        }
+
+        $transaksi->is_counted = true;
     }
 }

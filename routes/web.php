@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kasir/bayar/{id?}', [KasirController::class, 'bayar'])->name('kasir.bayar');
     Route::post('/kasir/simpan/{id?}', [KasirController::class, 'simpan'])->name('kasir.simpan');
     Route::post('/kasir/hapus/{id?}', [KasirController::class, 'hapus'])->name('kasir.hapus');
+    Route::get('/kasir/bayar_hutang/{id}', [KasirController::class, 'bayarHutang'])->name('kasir.bayar_hutang');
 
     Route::resource('penjualan', PenjualanController::class);
     Route::get('/penjualan/{id}/refund', [PenjualanController::class, 'refund'])->name('penjualan.refund');

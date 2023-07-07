@@ -4,17 +4,12 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Produk;
-use App\Models\User;
-use App\Models\Inventaris;
 
 class CariProduk extends Component
 {
     public $cari = '';
 
-    protected $listeners = [
-        'tambah' => 'tambah',
-        'tambahEnter' => 'tambahEnter',
-    ];
+    protected $listeners = ['enter'];
 
     public function render()
     {
@@ -30,13 +25,13 @@ class CariProduk extends Component
 
     public function tambah($id)
     {
-        $this->emit('tambahProduk', $id);
+        $this->emit('passTambah', $id);
         $this->cari = '';
     }
 
-    public function tambahEnter($cari)
+    public function enter()
     {
-        $this->emit('tambahProdukEnter', $cari);
+        $this->emit('passEnter', $this->cari);
         $this->cari = '';
     }
 }

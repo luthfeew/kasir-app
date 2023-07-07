@@ -9,116 +9,81 @@
     </div>
     <div class="col-xl-8">
         <x-card title="Rincian Pesanan">
-            <livewire:pesanan :transaksi_id="$id" />
+            <livewire:pesanan :transaksiId="$transaksiId" />
 
             <x-slot name="footer">
                 <x-button onclick="copyTotal()" data-toggle="modal" data-target="#modal-bayar">Bayar</x-button>
-                <x-button color="secondary" data-toggle="modal" data-target="#modal-bayar">Simpan</x-button>
-                <x-button color="danger" data-toggle="modal" data-target="#modal-bayar">Hapus</x-button>
+                <x-button color="secondary" data-toggle="modal" data-target="#modal-simpan">Simpan</x-button>
+                <x-button color="danger" data-toggle="modal" data-target="#modal-hapus">Hapus</x-button>
             </x-slot>
-
-            <div class="modal fade" id="modal-bayar">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Bayar</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <form action="{{ route('kasir.bayar', $id) }}" method="post">
-                            @csrf
-                            <div class="modal-body">
-                                <div class="col-8">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <tbody>
-                                                <tr>
-                                                    <th style="width:50%">Total Tagihan:</th>
-                                                    <td>
-                                                        <h3><span id="tagihanView"></span></h3>
-                                                        <input type="hidden" name="tagihan" id="tagihan">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Bayar:</th>
-                                                    <td>
-                                                        <div class="d-flex">
-                                                            <div class="mr-2">
-                                                                <h3>Rp</h3>
-                                                            </div>
-                                                            <div>
-                                                                <input type="text" onkeyup="hitungKembalian()" name="" id="bayarView" class="form-control form-control-lg">
-                                                                <input type="hidden" name="bayar" id="bayar">
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Kembalian:</th>
-                                                    <td>
-                                                        <h3>Rp <span id="kembalianView"></span></h3>
-                                                        <input type="hidden" name="kembalian" id="kembalian">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Hutang:</th>
-                                                    <td>
-                                                        <h3>Rp <span id="hutangView"></span></h3>
-                                                        <input type="hidden" name="hutang" id="hutang">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer justify-content-between">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                                <button type="submit" class="btn btn-primary">Bayar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
         </x-card>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-xl">
+    <div class="col-xl-6">
         <x-card title="Transaksi Pending">
             @env('local')
-            {{ $transaksi_pending }}
-            @endenv
-        </x-card>
-    </div>
-    <div class="col-xl">
-        <x-card title="Bayar Hutang">
-            @env('local')
-            {{ $transaksi_hutang }}
+            {{ $transaksiPending }}
             @endenv
 
             <table class="table">
                 <thead>
                     <tr>
                         <th>No Transaksi</th>
-                        <th>Nama Pelanggan</th>
+                        <th>Nama Pembeli</th>
+                        <th>Tanggal</th>
+                        <th>Total Tagihan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($transaksiPending as $item)
+                    <tr>
+                        <td>{{ $item->kode }}</td>
+                        <td>{{ $item->pelanggan->nama ?? $item->nama_pembeli }}</td>
+                        <td>{{ $item->updated_at }}</td>
+                        <td>@rupiah($item->transaksi_detail->sum('harga_total'))</td>
+                        <td>
+                            <a href="{{ route('kasir', $item->id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada data</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </x-card>
+    </div>
+    <div class="col-xl-6">
+        <x-card title="Transaksi Hutang">
+            @env('local')
+            {{ $transaksiHutang }}
+            @endenv
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No Transaksi</th>
+                        <th>Nama Pembeli</th>
                         <th>Tanggal</th>
                         <th>Total Hutang</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($transaksi_hutang as $item)
+                    @forelse ($transaksiHutang as $item)
                     <tr>
                         <td>{{ $item->kode }}</td>
-                        <td>{{ $item->nama_pembeli }}</td>
+                        <td>{{ $item->pelanggan->nama ?? $item->nama_pembeli }}</td>
                         <td>{{ $item->updated_at }}</td>
                         <td>@rupiah($item->bayar->hutang)</td>
                         <td>
-                            <a href="{{ route('kasir', $item->id) }}" class="btn btn-sm btn-primary">
+                            <a href="{{ route('kasir.bayar_hutang', $item->id) }}" class="btn btn-sm btn-primary">
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         </td>
@@ -135,18 +100,115 @@
     </div>
 </div>
 
+<!-- MODAL BAYAR -->
+<div class="modal fade" id="modal-bayar">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Bayar Pesanan</h4>
+            </div>
+            <form action="{{ route('kasir.bayar', $transaksiId) }}" method="post">
+                @csrf
+                <div class="modal-body">
+                    <div class="col-8">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th style="width:50%">Total Tagihan:</th>
+                                        <td>
+                                            <h3><span id="tagihanView"></span></h3>
+                                            <input type="hidden" name="tagihan" id="tagihan">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bayar:</th>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="mr-2">
+                                                    <h3>Rp</h3>
+                                                </div>
+                                                <div>
+                                                    <input type="text" onkeyup="hitungKembalian()" name="" id="bayarView" class="form-control form-control-lg">
+                                                    <input type="hidden" name="bayar" id="bayar">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Kembalian:</th>
+                                        <td>
+                                            <h3>Rp <span id="kembalianView"></span></h3>
+                                            <input type="hidden" name="kembalian" id="kembalian">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Hutang:</th>
+                                        <td>
+                                            <h3>Rp <span id="hutangView"></span></h3>
+                                            <input type="hidden" name="hutang" id="hutang">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Bayar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL SIMPAN -->
+<div class="modal fade" id="modal-simpan">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Simpan Pesanan</h4>
+            </div>
+            <div class="modal-body">
+                <p>Anda yakin ingin menyimpan pesanan ini?</p>
+            </div>
+            <form action="{{ route('kasir.simpan', $transaksiId) }}" method="post">
+                @csrf
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tidak</button>
+                    <button type="submit" class="btn btn-primary">Ya</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL HAPUS -->
+<div class="modal fade" id="modal-hapus">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Hapus Pesanan</h4>
+            </div>
+            <div class="modal-body">
+                <p>Anda yakin ingin menghapus pesanan ini?</p>
+            </div>
+            <form action="{{ route('kasir.hapus', $transaksiId) }}" method="post">
+                @csrf
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tidak</button>
+                    <button type="submit" class="btn btn-danger">Ya</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('js')
 <script>
-    function showButton(index) {
-        document.getElementById('button-' + index).classList.remove('d-none');
-    }
-
-    function showBtnPembeli() {
-        document.getElementById('btn-pembeli').classList.remove('d-none');
-    }
-
     function onlyNumber(value) {
         return value.replace(/\D/g, '');
     }
