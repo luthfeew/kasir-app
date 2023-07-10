@@ -33,17 +33,17 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="text-center">Tidak ada data</td>
+                    <td colspan="5" class="text-center">Tidak ada data</td>
                 </tr>
                 @endforelse
             </x-data-tables>
 
-            <x-slot:footer>
-                <!-- Refund if transaksi != refund -->
-                @if ($transaksi->status != 'refund')
+            <x-slot name="footer">
+                <!-- Refund if is_refundable -->
+                @if ($is_refundable && !$transaksi->is_refund)
                 <a href="{{ route('penjualan.refund', $transaksi->id) }}" class="btn btn-danger">Refund</a>
                 @endif
-            </x-slot:footer>
+            </x-slot>
 
         </x-card>
 

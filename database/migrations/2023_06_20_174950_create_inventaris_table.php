@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('inventaris', function (Blueprint $table) {
             $table->id();
             $table->foreignId('produk_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('transaksi_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('transaksi_id')->nullable()->constrained()->cascadeOnDelete();
             $table->integer('stok');
             $table->timestamps();
             $table->softDeletes();

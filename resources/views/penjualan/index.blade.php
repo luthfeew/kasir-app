@@ -21,6 +21,14 @@
                         @else
                         <span class="badge badge-warning">{{ Str::ucfirst($transaksi->status) }}</span>
                         @endif
+
+                        @if ($transaksi->is_hutang)
+                        <span class="badge badge-danger">Hutang</span>
+                        @endif
+
+                        @if ($transaksi->is_refund)
+                        <span class="badge badge-danger">Refund</span>
+                        @endif
                     </td>
                     <td>
                         <!-- <x-button-edit link="{{ route('penjualan.edit', $transaksi->id) }}" /> -->

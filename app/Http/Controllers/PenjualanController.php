@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
-use App\Models\Refund;
 use App\Models\Bayar;
 use App\Models\Inventaris;
 use App\Http\Controllers\KasirController;
@@ -49,8 +49,15 @@ class PenjualanController extends Controller
     {
         $transaksi = Transaksi::findOrFail($id);
         $transaksiDetail = TransaksiDetail::where('transaksi_id', $id)->get();
+        // is_refundable = true jika ada item di transaksi detail yang memiliki jumlah_beli > jumlah_refund
+        $is_refundable = false;
+        foreach ($transaksiDetail as $item) {
+            if ($item->jumlah_beli > $item->jumlah_refund) {
+                $is_refundable = true;
+            }
+        }
 
-        return view('penjualan.show', compact('transaksi', 'transaksiDetail'));
+        return view('penjualan.show', compact('transaksi', 'transaksiDetail', 'is_refundable'));
     }
 
     /**
@@ -81,6 +88,10 @@ class PenjualanController extends Controller
     {
         $transaksi = Transaksi::findOrFail($id);
         $transaksiDetail = TransaksiDetail::where('transaksi_id', $id)->get();
+        // jumlah_beli - jumlah_refund
+        foreach ($transaksiDetail as $item) {
+            $item->jumlah_beli = $item->jumlah_beli - $item->jumlah_refund;
+        }
 
         return view('penjualan.refund', compact('transaksi', 'transaksiDetail'));
     }
@@ -91,42 +102,39 @@ class PenjualanController extends Controller
         // dd(KasirController::test());
 
         $request->validate([
-            'alasan' => 'required',
+            'alasan_refund' => 'required',
             'produk_id' => 'required|array',
             'jumlah_beli' => 'required|array',
             'harga_satuan' => 'required|array',
             'harga_total' => 'required|array',
         ]);
 
-        $transaksi = Transaksi::findOrFail($id);
-        // change is_refunded to true
-        $transaksi->is_refunded = true;
-        $transaksi->save();
+        // $transaksi = Transaksi::findOrFail($id);
+        // // change is_refunded to true
+        // $transaksi->is_refunded = true;
+        // $transaksi->save();
 
-        Refund::create([
-            'transaksi_id' => $transaksi->id,
-            'alasan' => $request->alasan,
-        ]);
-
-        // ubah jumlah refund di transaksi detail sesuai dengan request
+        // ubah jumlah refund di transaksi detail jumlah sekarang = jumlah sebelumnya + jumlah refund
         foreach ($request->jumlah_beli as $key => $value) {
-            $transaksiDetail = TransaksiDetail::findOrFail($key);
-            $transaksiDetail->jumlah_refund = $value;
+            $transaksiDetail = TransaksiDetail::find($key);
+            $transaksiDetail->jumlah_refund = $transaksiDetail->jumlah_refund + $value;
             $transaksiDetail->save();
         }
 
+        $transaksi = Transaksi::find($id);
         Transaksi::create([
             'parent_id' => $transaksi->id,
             'user_id' => $transaksi->user_id,
             'pelanggan_id' => $transaksi->pelanggan_id,
-            // kode transaksi replace TRX with RFN
-            'kode' => str_replace('TRX', 'RFN', $transaksi->kode),
-            'status' => 'refund',
+            'kode' => Str::replaceFirst('TRX', 'RFN', $transaksi->kode),
+            'status' => 'selesai',
             'nama_pembeli' => $transaksi->nama_pembeli,
-            // 'is_counted' => false,
+            'is_refund' => true,
+            'alasan_refund' => $request->alasan_refund,
         ]);
 
-        $newTransaksi = Transaksi::where('parent_id', $transaksi->id)->first();
+        // $newTransaksi = Transaksi::where('parent_id', $transaksi->id)->first();
+        $newTransaksi = Transaksi::where('parent_id', $transaksi->id)->get()->last(); 
         // foreach jumlah_beli, harga_satuan, harga_total, create new transaksi detail
         foreach ($request->jumlah_beli as $key => $value) {
             TransaksiDetail::create([
@@ -138,9 +146,15 @@ class PenjualanController extends Controller
                 'harga_total' => $request->harga_total[$key],
             ]);
         }
-        self::hitungStokLogic($newTransaksi);
-        $newTransaksi->is_counted = true;
-        $newTransaksi->save();
+
+        // self::hitungStokLogic($newTransaksi);
+        // $newTransaksi->is_counted = true;
+        // $newTransaksi->save();
+
+        // call hitungStokLogic from KasirController
+        KasirController::hitungStokLogic($newTransaksi, true);
+        $transaksi->is_counted = true;
+        $transaksi->save();
 
         Bayar::create([
             'transaksi_id' => $newTransaksi->id,
@@ -152,21 +166,5 @@ class PenjualanController extends Controller
         ]);
 
         return redirect()->route('penjualan.index')->with('success', 'Refund berhasil.');
-    }
-
-    public static function hitungStokLogic($transaksi)
-    {
-        // dd($transaksi);
-        if (!$transaksi->is_counted) {
-            $transaksiDetail = TransaksiDetail::where('transaksi_id', $transaksi->id)->get();
-            foreach ($transaksiDetail as $item) {
-                // create new record in inventaris
-                Inventaris::create([
-                    'produk_id' => $item->produk_id,
-                    'transaksi_id' => $item->transaksi_id,
-                    'stok' => $item->jumlah_beli,
-                ]);
-            }
-        }
     }
 }

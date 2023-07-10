@@ -140,7 +140,7 @@ class KasirController extends Controller
         return redirect()->route('kasir', $new->id);
     }
 
-    public function hitungStokLogic($transaksi)
+    public static function hitungStokLogic($transaksi, $refund = false)
     {
         if ($transaksi->is_counted) {
             return;
@@ -152,7 +152,7 @@ class KasirController extends Controller
             Inventaris::create([
                 'produk_id' => $item->produk_id,
                 'transaksi_id' => $item->transaksi_id,
-                'stok' => -$item->jumlah_beli,
+                'stok' => $refund ? $item->jumlah_beli : -$item->jumlah_beli,
             ]);
         }
 
