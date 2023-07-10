@@ -9,6 +9,26 @@ use Illuminate\Support\Str;
 
 class LaporanController extends Controller
 {
+    public function ringkasanPenjualan()
+    {
+        return view('laporan.ringkasan_penjualan');
+    }
+
+    public function topReport()
+    {
+        return view('laporan.top_report');
+    }
+
+    public function tutupKasir()
+    {
+        return view('laporan.tutup_kasir');
+    }
+
+    public function kasKasir()
+    {
+        return view('laporan.kas_kasir');
+    }
+
     public function test()
     {
         // dd(Printing::defaultPrinterId());
@@ -53,7 +73,5 @@ class LaporanController extends Controller
             ->printer($printerId)
             ->content($text) // content will be base64_encoded if using PrintNode
             ->send();
-
-        
     }
 }
