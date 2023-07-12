@@ -1,6 +1,6 @@
 <div>
     @env('local')
-    {{ $ayy ?? '' }}
+
     @endenv
 
     <div class="form-group">
@@ -29,49 +29,44 @@
         <x-widget bgColor="bg-info" icon="fas fa-boxes" text="Total Produk" number="{{ $totalProdukTerjual }}" />
     </div>
 
+    @if ($listData)
     <div class="table-responsive p-0">
         <table class="table table-hover text-nowrap">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>User</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Reason</th>
+                    <th>Waktu</th>
+                    <th>Total Penjualan</th>
+                    <th>Laba Kotor</th>
+                    <th>Terima Pembayaran</th>
+                    <th>Refund</th>
+                    <th>Hutang</th>
+                    <th>Rata-rata Transaksi</th>
+                    <th>Total Transaksi</th>
+                    <th>Total Produk</th>
                 </tr>
             </thead>
             <tbody>
+                @forelse ($listData as $item)
                 <tr>
-                    <td>183</td>
-                    <td>John Doe</td>
-                    <td>11-7-2014</td>
-                    <td><span class="tag tag-success">Approved</span></td>
-                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                    <td>{{ $item['tanggal'] }}</td>
+                    <td>{{ $item['totalPenjualan'] }}</td>
+                    <td>{{ $item['labaKotor'] }}</td>
+                    <td>{{ $item['terimaPembayaran'] }}</td>
+                    <td>{{ $item['sumRefund'] }}</td>
+                    <td>{{ $item['sumHutang'] }}</td>
+                    <td>{{ $item['rataTransaksi'] }}</td>
+                    <td>{{ $item['totalTransaksi'] }}</td>
+                    <td>{{ $item['totalProdukTerjual'] }}</td>
                 </tr>
+                @empty
                 <tr>
-                    <td>219</td>
-                    <td>Alexander Pierce</td>
-                    <td>11-7-2014</td>
-                    <td><span class="tag tag-warning">Pending</span></td>
-                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                    <td colspan="8" class="text-center">Tidak ada data</td>
                 </tr>
-                <tr>
-                    <td>657</td>
-                    <td>Bob Doe</td>
-                    <td>11-7-2014</td>
-                    <td><span class="tag tag-primary">Approved</span></td>
-                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                    <td>175</td>
-                    <td>Mike Doe</td>
-                    <td>11-7-2014</td>
-                    <td><span class="tag tag-danger">Denied</span></td>
-                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
+    @endif
 </div>
 
 @push('css')

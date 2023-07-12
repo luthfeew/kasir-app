@@ -92,18 +92,136 @@ class RingkasanPenjualan extends Component
         // get data from getData() method
         $data = $this->getData();
 
-        // if rentang = 3, group transaksi by day
         if ($this->rentang == 3) {
-            // get created_at column only from transaksi table, group by created_at column.
-            $abc = Transaksi::where('status', 'selesai')
-                ->whereBetween('created_at', [$this->tanggalAwal . ' 00:00:00', $this->tanggalAkhir . ' 23:59:59'])
-                ->get(['created_at']);
-
-            // get data from getData() method with custom tanggalAwal and tanggalAkhir from $abc
-            $ayyy = [];
-            foreach ($abc as $key => $value) {
-                $ayyy[$key] = $this->getData($value->created_at->format('Y-m-d'), $value->created_at->format('Y-m-d'));
+            // buat list tanggal 7 hari terakhir dari tanggalAwal dengan format Y-m-d
+            $listTanggal = [];
+            for ($i = 0; $i < 7; $i++) {
+                array_push($listTanggal, Carbon::parse($this->tanggalAwal)->addDays($i)->format('Y-m-d'));
             }
+            // get data from getData() method
+            $listData = [];
+            foreach ($listTanggal as $tanggal) {
+                $x = $this->getData($tanggal, $tanggal);
+                array_push($listData, [
+                    'tanggal' => Carbon::parse($tanggal)->format('d-m-Y'),
+                    'totalPenjualan' => $x['totalPenjualan'],
+                    'labaKotor' => $x['labaKotor'],
+                    'terimaPembayaran' => $x['terimaPembayaran'],
+                    'sumRefund' => $x['sumRefund'],
+                    'sumHutang' => $x['sumHutang'],
+                    'rataTransaksi' => $x['rataTransaksi'],
+                    'totalTransaksi' => $x['totalTransaksi'],
+                    'totalProdukTerjual' => $x['totalProdukTerjual'],
+                ]);
+            }
+        } elseif ($this->rentang == 4 || $this->rentang == 5 || $this->rentang == 6) {
+            // buat list tanggalAwal dan tanggalAkhir perminggu dari tanggalAwal dengan format Y-m-d
+            $listTanggal = [];
+            for ($i = 0; $i < 5; $i++) {
+                array_push($listTanggal, [
+                    'tanggalAwal' => Carbon::parse($this->tanggalAwal)->addWeeks($i)->format('Y-m-d'),
+                    'tanggalAkhir' => Carbon::parse($this->tanggalAwal)->addWeeks($i)->addDays(6)->format('Y-m-d')
+                ]);
+            }
+
+            // get data from getData() method
+            $listData = [];
+            foreach ($listTanggal as $tanggal) {
+                $x = $this->getData($tanggal['tanggalAwal'], $tanggal['tanggalAkhir']);
+                array_push($listData, [
+                    'tanggal' => Carbon::parse($tanggal['tanggalAwal'])->format('d-m-Y') . ' - ' . Carbon::parse($tanggal['tanggalAkhir'])->format('d-m-Y'),
+                    'totalPenjualan' => $x['totalPenjualan'],
+                    'labaKotor' => $x['labaKotor'],
+                    'terimaPembayaran' => $x['terimaPembayaran'],
+                    'sumRefund' => $x['sumRefund'],
+                    'sumHutang' => $x['sumHutang'],
+                    'rataTransaksi' => $x['rataTransaksi'],
+                    'totalTransaksi' => $x['totalTransaksi'],
+                    'totalProdukTerjual' => $x['totalProdukTerjual'],
+                ]);
+            }
+        } elseif ($this->rentang == 7) {
+            // buat list tanggalAwal dan tanggalAkhir perbulan dari tanggalAwal dengan format Y-m-d
+            $listTanggal = [];
+            for ($i = 0; $i < 12; $i++) {
+                array_push($listTanggal, [
+                    'tanggalAwal' => Carbon::parse($this->tanggalAwal)->addMonths($i)->format('Y-m-d'),
+                    'tanggalAkhir' => Carbon::parse($this->tanggalAwal)->addMonths($i)->endOfMonth()->format('Y-m-d')
+                ]);
+            }
+
+            // get data from getData() method
+            $listData = [];
+            foreach ($listTanggal as $tanggal) {
+                $x = $this->getData($tanggal['tanggalAwal'], $tanggal['tanggalAkhir']);
+                array_push($listData, [
+                    'tanggal' => Carbon::parse($tanggal['tanggalAwal'])->format('F Y'),
+                    'totalPenjualan' => $x['totalPenjualan'],
+                    'labaKotor' => $x['labaKotor'],
+                    'terimaPembayaran' => $x['terimaPembayaran'],
+                    'sumRefund' => $x['sumRefund'],
+                    'sumHutang' => $x['sumHutang'],
+                    'rataTransaksi' => $x['rataTransaksi'],
+                    'totalTransaksi' => $x['totalTransaksi'],
+                    'totalProdukTerjual' => $x['totalProdukTerjual'],
+                ]);
+            }
+        } elseif ($this->rentang == 0) {
+            // cek selisih tanggalAwal dan tanggalAkhir
+            $selisih = Carbon::parse($this->tanggalAwal)->diffInDays(Carbon::parse($this->tanggalAkhir));
+
+            // jika selisih kurang dari sama dengan 15 hari tampilkan harian. jika antara 15 dan 60 tampilkan mingguan. jika lebih dari 60 tampilkan bulanan
+            if ($selisih <= 15) {
+                // buat list tanggal dari tanggalAwal sampai tanggalAkhir dengan format Y-m-d
+                $listTanggal = [];
+                for ($i = 0; $i <= $selisih; $i++) {
+                    array_push($listTanggal, Carbon::parse($this->tanggalAwal)->addDays($i)->format('Y-m-d'));
+                }
+            } elseif ($selisih > 15 && $selisih <= 60) {
+                // buat list tanggalAwal dan tanggalAkhir perminggu dari tanggalAwal dengan format Y-m-d
+                $listTanggal = [];
+                $minggu = Carbon::parse($this->tanggalAwal)->diffInWeeks(Carbon::parse($this->tanggalAkhir));
+                for ($i = 0; $i <= $minggu; $i++) {
+                    array_push($listTanggal, [
+                        'tanggalAwal' => Carbon::parse($this->tanggalAwal)->addWeeks($i)->format('Y-m-d'),
+                        'tanggalAkhir' => Carbon::parse($this->tanggalAwal)->addWeeks($i)->addDays(6)->format('Y-m-d')
+                    ]);
+                }
+            } elseif ($selisih > 60) {
+                // buat list tanggalAwal dan tanggalAkhir perbulan dari tanggalAwal dengan format Y-m-d
+                $listTanggal = [];
+                $bulan = Carbon::parse($this->tanggalAwal)->diffInMonths(Carbon::parse($this->tanggalAkhir));
+                for ($i = 0; $i <= $bulan; $i++) {
+                    array_push($listTanggal, [
+                        'tanggalAwal' => Carbon::parse($this->tanggalAwal)->addMonths($i)->format('Y-m-d'),
+                        'tanggalAkhir' => Carbon::parse($this->tanggalAwal)->addMonths($i)->endOfMonth()->format('Y-m-d')
+                    ]);
+                }
+            }
+
+            // get data from getData() method
+            $listData = [];
+            foreach ($listTanggal as $tanggal) {
+                if (is_array($tanggal)) {
+                    $x = $this->getData($tanggal['tanggalAwal'], $tanggal['tanggalAkhir']);
+                } else {
+                    $x = $this->getData($tanggal, $tanggal);
+                }
+                array_push($listData, [
+                    // use selisih to determine format date
+                    'tanggal' => $selisih <= 15 ? Carbon::parse($tanggal)->format('d-m-Y') : (is_array($tanggal) ? Carbon::parse($tanggal['tanggalAwal'])->format('d-m-Y') . ' - ' . Carbon::parse($tanggal['tanggalAkhir'])->format('d-m-Y') : Carbon::parse($tanggal)->format('F Y')),
+                    'totalPenjualan' => $x['totalPenjualan'],
+                    'labaKotor' => $x['labaKotor'],
+                    'terimaPembayaran' => $x['terimaPembayaran'],
+                    'sumRefund' => $x['sumRefund'],
+                    'sumHutang' => $x['sumHutang'],
+                    'rataTransaksi' => $x['rataTransaksi'],
+                    'totalTransaksi' => $x['totalTransaksi'],
+                    'totalProdukTerjual' => $x['totalProdukTerjual'],
+                ]);
+            }
+        } else {
+            $listData = [];
         }
 
         return view('livewire.laporan.ringkasan-penjualan', [
@@ -115,7 +233,7 @@ class RingkasanPenjualan extends Component
             'rataTransaksi' => $data['rataTransaksi'],
             'totalTransaksi' => $data['totalTransaksi'],
             'totalProdukTerjual' => $data['totalProdukTerjual'],
-            'ayyy' => $ayyy ?? null
+            'listData' => $listData ?? []
         ]);
     }
 }
