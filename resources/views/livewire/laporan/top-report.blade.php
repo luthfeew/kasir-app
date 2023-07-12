@@ -4,16 +4,32 @@
     {{ $tanggalAkhir }}
     {{ $rentang }}
     {{ $inventaris }}
+    {{ $kategori }}
     @endenv
 
-    <div class="form-group">
-        <label>Rentang Waktu:</label>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>Rentang Waktu:</label>
 
-        <div id="reportrange" class="input-group" wire:ignore>
-            <button type="button" class="btn btn-default float-right" id="daterange-btn">
-                <i class="far fa-calendar-alt"></i> <span>Hari Ini</span>
-                <i class="fas fa-caret-down"></i>
-            </button>
+                <div id="reportrange" class="input-group" wire:ignore>
+                    <button type="button" class="btn btn-default float-right" id="daterange-btn">
+                        <i class="far fa-calendar-alt"></i> <span>Hari Ini</span>
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group" wire:ignore>
+                <label>Kategori: </label>
+                <select class="form-control select2bs4" style="width: 100%;">
+                    <option value="">Semua Kategori</option>
+                    @foreach ($kategoriProduk as $item)
+                    <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
     </div>
 
@@ -51,10 +67,16 @@
 </div>
 
 @push('css')
+<!-- Select2 -->
+<link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+<!-- daterange picker -->
 <link rel="stylesheet" href="{{ asset('plugins/daterangepicker/daterangepicker.css') }}">
 @endpush
 
 @push('js')
+<!-- Select2 -->
+<script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
 <!-- InputMask -->
 <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
 <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
@@ -62,6 +84,17 @@
 <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
 
 <script>
+    $(function() {
+        //Initialize Select2 Elements
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+        // select2 onchange event
+        $('.select2bs4').on('change', function(e) {
+            var data = $('.select2bs4').select2("val");
+            Livewire.emit('setKategori', data);
+        });
+    });
     $('#daterange-btn').daterangepicker({
         ranges: {
             'Hari Ini': [moment(), moment()],

@@ -6,10 +6,11 @@ use Livewire\Component;
 use Illuminate\Support\Carbon;
 use App\Models\Inventaris;
 use App\Models\TransaksiDetail;
+use App\Models\ProdukKategori;
 
 class TopReport extends Component
 {
-    public $tanggalAwal, $tanggalAkhir, $rentang;
+    public $tanggalAwal, $tanggalAkhir, $rentang, $kategori;
 
     public function mount()
     {
@@ -18,7 +19,7 @@ class TopReport extends Component
         $this->rentang = 1;
     }
 
-    protected $listeners = ['setTanggal'];
+    protected $listeners = ['setTanggal', 'setKategori'];
 
     public function setTanggal($tanggalAwal, $tanggalAkhir, $rentang)
     {
@@ -27,14 +28,23 @@ class TopReport extends Component
         $this->rentang = $rentang;
     }
 
+    public function setKategori($kategori)
+    {
+        $this->kategori = $kategori;
+    }
+
     public function render()
     {
         // $inventaris = select all from inventaris where transaksi_id is not null and stok is negative, between tanggalAwal and tanggalAkhir
         $inventaris = Inventaris::whereNotNull('transaksi_id')
             ->where('stok', '<', 0)
             ->whereBetween('created_at', [$this->tanggalAwal . ' 00:00:00', $this->tanggalAkhir . ' 23:59:59'])
-            // ->groupBy('produk_id')
-            // ->selectRaw('produk_id, sum(stok) as stok')
+            // if kategori is not null, then filter by kategori
+            ->when($this->kategori, function ($query, $kategori) {
+                return $query->whereHas('produk', function ($query) use ($kategori) {
+                    $query->where('produk_kategori_id', $kategori);
+                });
+            })
             ->get();
 
         // get harga from transaksi_detail where transaksi_id = inventaris->transaksi_id and produk_id = inventaris->produk_id
@@ -56,10 +66,13 @@ class TopReport extends Component
         $totalProdukTerjual = $inventaris->sum('produk_terjual');
         $totalHargaTotal = $inventaris->sum('harga_total');
 
+        $kategoriProduk = ProdukKategori::all();
+
         return view('livewire.laporan.top-report', [
             'inventaris' => $inventaris,
             'totalProdukTerjual' => $totalProdukTerjual,
             'totalHargaTotal' => $totalHargaTotal,
+            'kategoriProduk' => $kategoriProduk,
         ]);
     }
 }
