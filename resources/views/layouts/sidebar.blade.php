@@ -56,7 +56,7 @@
                         <li class="nav-item">
                             <a href="{{ route('laporan.top_report') }}" class="nav-link @if(Request::segment(2) == 'top_report') active @endif">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Top 10 Report</p>
+                                <p>Top Report</p>
                             </a>
                         </li>
                         <li class="nav-item">

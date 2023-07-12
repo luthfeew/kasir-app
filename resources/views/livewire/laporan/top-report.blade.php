@@ -1,6 +1,9 @@
 <div>
     @env('local')
-    {{ $ayy ?? '' }}
+    {{ $tanggalAwal }}
+    {{ $tanggalAkhir }}
+    {{ $rentang }}
+    {{ $inventaris }}
     @endenv
 
     <div class="form-group">
@@ -15,60 +18,33 @@
     </div>
 
     <div class="row">
-        <x-widget bgColor="bg-info" icon="fas fa-dollar-sign" text="Total Penjualan" number="Rp. {{ number_format($totalPenjualan, 0, ',', '.') }}" />
-        <x-widget bgColor="bg-success" icon="fas fa-coins" text="Laba Kotor" number="Rp. {{ number_format($labaKotor, 0, ',', '.') }}" />
-        <x-widget bgColor="bg-success" icon="fas fa-hand-holding-usd" text="Terima Pembayaran" number="Rp. {{ number_format($terimaPembayaran, 0, ',', '.') }}" />
-    </div>
-    <div class="row">
-        <x-widget bgColor="bg-danger" icon="fas fa-hand-holding-usd" text="Refund" number="Rp. {{ number_format($sumRefund, 0, ',', '.') }}" />
-        <x-widget bgColor="bg-warning" icon="fas fa-hand-holding-usd" text="Hutang" number="Rp. {{ number_format($sumHutang, 0, ',', '.') }}" />
-    </div>
-    <div class="row">
-        <x-widget bgColor="bg-info" icon="fas fa-money-check" text="Rata-Rata Transaksi" number="Rp. {{ number_format($rataTransaksi, 0, ',', '.') }}" />
-        <x-widget bgColor="bg-info" icon="fas fa-list" text="Total Transaksi" number="{{ $totalTransaksi }}" />
-        <x-widget bgColor="bg-info" icon="fas fa-boxes" text="Total Produk" number="{{ $totalProdukTerjual }}" />
+        <x-widget bgColor="bg-success" icon="fas fa-boxes" text="Total Produk Terjual" number="{{ abs($totalProdukTerjual) }} Produk" />
+        <x-widget bgColor="bg-success" icon="fas fa-hand-holding-usd" text="Harga Total" number="Rp. {{ number_format($totalHargaTotal, 0, ',', '.') }}" />
     </div>
 
     <div class="table-responsive p-0">
         <table class="table table-hover text-nowrap">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>User</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Reason</th>
+                    <th>No</th>
+                    <th>Nama Produk</th>
+                    <th>Produk Terjual</th>
+                    <th>Harga Total</th>
                 </tr>
             </thead>
             <tbody>
+                @forelse ($inventaris as $key => $item)
                 <tr>
-                    <td>183</td>
-                    <td>John Doe</td>
-                    <td>11-7-2014</td>
-                    <td><span class="tag tag-success">Approved</span></td>
-                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item['nama_produk'] }}</td>
+                    <td>{{ abs($item['produk_terjual']) }}</td>
+                    <td>Rp. {{ number_format($item['harga_total'], 0, ',', '.') }}</td>
                 </tr>
+                @empty
                 <tr>
-                    <td>219</td>
-                    <td>Alexander Pierce</td>
-                    <td>11-7-2014</td>
-                    <td><span class="tag tag-warning">Pending</span></td>
-                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                    <td colspan="4" class="text-center">Tidak ada data</td>
                 </tr>
-                <tr>
-                    <td>657</td>
-                    <td>Bob Doe</td>
-                    <td>11-7-2014</td>
-                    <td><span class="tag tag-primary">Approved</span></td>
-                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
-                <tr>
-                    <td>175</td>
-                    <td>Mike Doe</td>
-                    <td>11-7-2014</td>
-                    <td><span class="tag tag-danger">Denied</span></td>
-                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -93,8 +69,7 @@
             '7 Hari Terakhir': [moment().subtract(6, 'days'), moment()],
             '30 Hari Terakhir': [moment().subtract(29, 'days'), moment()],
             'Bulan Ini': [moment().startOf('month'), moment().endOf('month')],
-            'Bulan Lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-            'Tahun Ini': [moment().startOf('year'), moment().endOf('year')],
+            'Bulan Lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         },
         startDate: moment(),
         endDate: moment(),
@@ -156,13 +131,9 @@
                 $('#reportrange span').html('Bulan Lalu');
                 range = 6;
                 break;
-            case moment().startOf('year').format('DD/MM/YYYY'):
-                $('#reportrange span').html('Tahun Ini');
-                range = 7;
-                break;
             default:
                 $('#reportrange span').html(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-                range = 0;
+                range = 7;
                 break;
         }
         Livewire.emit('setTanggal', picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'), range);

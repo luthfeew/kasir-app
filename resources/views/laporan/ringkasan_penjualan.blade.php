@@ -9,9 +9,7 @@
     <div class="col">
 
         <x-card title="Laporan Ringkasan Penjualan">
-
             <livewire:laporan.ringkasan-penjualan />
-
         </x-card>
 
     </div>
