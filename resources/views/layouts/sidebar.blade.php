@@ -109,7 +109,7 @@
                 <li class="nav-item">
                     <a href="{{ route('karyawan.index') }}" class="nav-link @if(Request::segment(1) == 'karyawan') active @endif">
                         <i class="nav-icon fas fa-users"></i>
-                        <p>Karyawan</p>
+                        <p>User</p>
                     </a>
                 </li>
                 @endif

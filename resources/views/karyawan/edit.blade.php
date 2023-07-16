@@ -1,8 +1,8 @@
-@extends('layouts.app', ['title' => 'Edit Karyawan'])
+@extends('layouts.app', ['title' => 'Edit User'])
 
 @section('breadcrumb')
 <!-- <li class="breadcrumb-item">Gudang</li> -->
-<li class="breadcrumb-item"><a href="{{ route('karyawan.index') }}">Karyawan</a></li>
+<li class="breadcrumb-item"><a href="{{ route('karyawan.index') }}">User</a></li>
 @endsection
 
 @section('content')
@@ -12,11 +12,11 @@
         <form action="{{ route('karyawan.update', $data->id) }}" method="post">
             @csrf
             @method('PUT')
-            <x-card title="Edit Data Karyawan">
+            <x-card title="Edit Data User">
 
-                <h4 class="bg-primary">Data Karyawan</h4>
+                <h4 class="bg-primary">Data User</h4>
                 <div class="row">
-                    <div class="col-md"><x-input name="nama" label="Nama Karyawan" type="text" :value="$data->nama" /></div>
+                    <div class="col-md"><x-input name="nama" label="Nama User" type="text" :value="$data->nama" /></div>
                     <div class="col-md-5"><x-input name="alamat" label="Alamat" type="text" :value="$data->alamat" /></div>
                     <div class="col-md-3"><x-input name="telepon" label="No Telepon" type="number" :value="$data->telepon" /></div>
                 </div>

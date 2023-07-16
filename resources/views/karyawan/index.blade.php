@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Karyawan'])
+@extends('layouts.app', ['title' => 'User'])
 
 @section('breadcrumb')
 <!-- <li class="breadcrumb-item">Gudang</li> -->
@@ -8,9 +8,9 @@
 <div class="row">
     <div class="col">
 
-        <x-card title="Data Karyawan">
+        <x-card title="Data User">
             
-            <x-button-add link="{{ route('karyawan.create') }}" label="Tambah Karyawan" />
+            <x-button-add link="{{ route('karyawan.create') }}" label="Tambah User" />
 
             <x-data-tables :kolomTabel="['No', 'Nama', 'Alamat', 'No Telepon', 'Role', 'Aksi']">
                 @forelse ($data as $item)
