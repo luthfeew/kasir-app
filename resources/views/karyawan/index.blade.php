@@ -19,7 +19,7 @@
                     <td>{{ $item->nama }}</td>
                     <td>{{ $item->alamat }}</td>
                     <td>{{ $item->telepon }}</td>
-                    <td>{{ $item->role }}</td>
+                    <td>{{ $item->role == 'admin' ? 'Owner' : $item->role }}</td>
                     <td>
                         <x-button-edit link="{{ route('karyawan.edit', $item->id) }}" />
                         <x-button-delete link="{{ route('karyawan.destroy', $item->id) }}" />
