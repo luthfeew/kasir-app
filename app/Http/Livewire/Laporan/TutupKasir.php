@@ -4,6 +4,9 @@ namespace App\Http\Livewire\Laporan;
 
 use Livewire\Component;
 use Illuminate\Support\Carbon;
+use App\Models\Sesi;
+use App\Models\Kas;
+use Illuminate\Support\Facades\Auth;
 
 class TutupKasir extends Component
 {
@@ -27,6 +30,16 @@ class TutupKasir extends Component
 
     public function render()
     {
-        return view('livewire.laporan.tutup-kasir');
+        // get all sesi where user_id = auth user and group by date per day
+        $data = Sesi::where('user_id', Auth::user()->id)
+            ->whereBetween('created_at', [$this->tanggalAwal . ' 00:00:00', $this->tanggalAkhir . ' 23:59:59'])
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->created_at->format('Y-m-d');
+            });
+
+        return view('livewire.laporan.tutup-kasir', [
+            'data' => $data
+        ]);
     }
 }
