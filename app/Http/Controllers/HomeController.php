@@ -3,8 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PrintController;
 use App\Models\Sesi;
+use App\Models\Kas;
+use App\Models\Transaksi;
+use App\Models\TransaksiDetail;
+use App\Models\Bayar;
 
 class HomeController extends Controller
 {
@@ -55,7 +61,21 @@ class HomeController extends Controller
 
     public function tutupKasir()
     {
-        return view('home.tutup-kasir');
+        $sesi = $this->cekSesi();
+        $waktuMulai = Carbon::parse($sesi->waktu_mulai);
+        $waktuSelesai = Carbon::parse($sesi->waktu_selesai);
+
+        $terimaPembayaran = $this->getTerimaPembayaran($waktuMulai, $waktuSelesai);
+
+        $kasKasir = Kas::where('user_id', Auth::user()->id)
+            ->whereBetween('created_at', [$waktuMulai, $waktuSelesai])
+            ->get();
+        $kasMasuk = $kasKasir->where('jenis', 'masuk')->sum('nominal') + $sesi->saldo_awal;
+        $kasKeluar = $kasKasir->where('jenis', 'keluar')->sum('nominal');
+
+        $saldoAkhir = $terimaPembayaran + $kasMasuk - $kasKeluar;
+
+        return view('home.tutup-kasir', compact('saldoAkhir'));
     }
 
     public function tutupKasirStore(Request $request)
@@ -72,10 +92,30 @@ class HomeController extends Controller
                 'waktu_selesai' => now(),
                 'saldo_akhir' => $request->saldo_akhir,
             ]);
+
+            // PRINT_HERE
+            PrintController::printTutupKasir($sesi->id);
+            
         } else {
             return redirect()->route('dashboard')->with('error', 'Anda belum membuka kasir.');
         }
 
         return redirect()->route('dashboard')->with('success', 'Berhasil menutup kasir.');
+    }
+
+    public function getTerimaPembayaran($waktuMulai, $waktuSelesai)
+    {
+        $transaksiAll = Transaksi::where('status', 'selesai')
+            ->whereBetween('updated_at', [$waktuMulai, $waktuSelesai])
+            ->get();
+
+        // totalPenjualan = sum harga_total from transaksi detail table
+        $totalPenjualan = TransaksiDetail::whereIn('transaksi_id', $transaksiAll->where('is_refund', false)->pluck('id'))->sum('harga_total');
+
+        $sumRefund = TransaksiDetail::whereIn('transaksi_id', $transaksiAll->where('is_refund', true)->pluck('id'))->sum('harga_total');
+        $sumHutang = Bayar::whereIn('transaksi_id', $transaksiAll->where('is_hutang', true)->pluck('id'))->sum('hutang');
+        $terimaPembayaran = $totalPenjualan - $sumRefund - $sumHutang;
+
+        return $terimaPembayaran;
     }
 }

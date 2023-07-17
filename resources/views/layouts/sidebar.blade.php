@@ -38,6 +38,34 @@
                     </a>
                 </li>
                 @if (Auth::user()->role == 'admin')
+
+                @endif
+                @endif
+                <li class="nav-item @if(Request::segment(1) == 'gudang') menu-open @endif">
+                    <a href="#" class="nav-link @if(Request::segment(1) == 'gudang') active @endif">
+                        <i class="nav-icon fas fa-warehouse"></i>
+                        <p>
+                            Gudang
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('produk.index') }}" class="nav-link @if(Request::segment(2) == 'produk') active @endif">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Produk</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('kategori.index') }}" class="nav-link @if(Request::segment(2) == 'kategori') active @endif">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Kategori</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                @if (Auth::user()->role == 'admin')
                 <li class="nav-item @if(Request::segment(1) == 'laporan') menu-open @endif">
                     <a href="#" class="nav-link @if(Request::segment(1) == 'laporan') active @endif">
                         <i class="nav-icon fas fa-book"></i>
@@ -73,33 +101,6 @@
                         </li>
                     </ul>
                 </li>
-                @endif
-                @endif
-                <li class="nav-item @if(Request::segment(1) == 'gudang') menu-open @endif">
-                    <a href="#" class="nav-link @if(Request::segment(1) == 'gudang') active @endif">
-                        <i class="nav-icon fas fa-warehouse"></i>
-                        <p>
-                            Gudang
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('produk.index') }}" class="nav-link @if(Request::segment(2) == 'produk') active @endif">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Produk</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('kategori.index') }}" class="nav-link @if(Request::segment(2) == 'kategori') active @endif">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kategori</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                @if (Auth::user()->role == 'admin')
                 <li class="nav-item">
                     <a href="{{ route('pelanggan.index') }}" class="nav-link @if(Request::segment(1) == 'pelanggan') active @endif">
                         <i class="nav-icon fas fa-user-tag"></i>

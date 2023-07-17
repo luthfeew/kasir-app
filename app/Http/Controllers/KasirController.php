@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\HomeController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PrintController;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use App\Models\Bayar;
@@ -82,6 +83,9 @@ class KasirController extends Controller
             'kembalian' => $request->kembalian,
             'hutang' => $request->hutang,
         ]);
+
+        // PRINT_HERE
+        PrintController::printPesanan($transaksi->id);
 
         return redirect()->route('kasir')->with('success', 'Transaksi berhasil dibayar.');
     }

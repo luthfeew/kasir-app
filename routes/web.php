@@ -10,6 +10,7 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\PrintController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,5 +58,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('karyawan', KaryawanController::class);
     Route::resource('pelanggan', PelangganController::class);
 
-    Route::get('/test', [LaporanController::class, 'test'])->name('test');
+    Route::get('/test/{id}', [PrintController::class, 'printPesanan'])->name('test');
+    Route::get('/test2/{id}', [PrintController::class, 'printTutupKasir'])->name('test2');
 });
