@@ -103,8 +103,8 @@ class Pesanan extends Component
         if ($cek) {
             $cek->update([
                 'jumlah_beli' => $aksi == 'tambah' ? $cek->jumlah_beli + 1 : $cek->jumlah_beli - 1,
-                'harga_satuan' => $harga,
-                'harga_total' => $cek->jumlah_beli * $harga
+                // 'harga_satuan' => $harga,
+                // 'harga_total' => $cek->jumlah_beli * $harga
             ]);
         } else {
             // jika produk belum ada maka tambahkan
@@ -116,6 +116,9 @@ class Pesanan extends Component
                 'harga_total' => $harga
             ]);
         }
+
+        // refresh harga
+        self::refreshHarga($produkId);
     }
 
     public function updateNamaPembeli()
