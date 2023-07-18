@@ -13,70 +13,65 @@ use App\Models\TransaksiDetail;
 use App\Models\Bayar;
 use App\Models\Kas;
 use App\Models\Sesi;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\Printer;
 
 class PrintController extends Controller
 {
-    public static $printerId = 72437554;
+    public static $printerName = "test";
+    public static $lineCharacterLength = 32;
 
     public static function printPesanan($transaksiId)
     {
         $transaksi = Transaksi::findOrFail($transaksiId);
+        $connector = new WindowsPrintConnector(self::$printerName);
+        $printer = new Printer($connector);
 
-        // // dd(Printing::defaultPrinterId());
-        // $printers = Printing::printers();
-        // // dd($printers);
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+        $printer->text("Toko SiMas\n");
+        $printer->selectPrintMode();
+        $printer->text("Jl. Toyareka Raya\n");
+        $printer->feed();
 
-        // foreach ($printers as $printer) {
-        //     echo $printer->id() . ' - ' . $printer->name() . '<br>';
-        // }
+        $printer->setJustification(Printer::JUSTIFY_LEFT);
+        $printer->text(self::doubleLine());
+        $printer->text(self::dualColumnText('No Nota', ': ' . Str::padRight($transaksi->kode, 16)));
+        $printer->text(self::dualColumnText('Waktu', ': ' . Str::padRight(Carbon::parse($transaksi->updated_at)->format('d-m-Y H:i'), 16)));
+        $printer->text(self::dualColumnText('Kasir', ': ' . Str::padRight($transaksi->user->nama, 16)));
 
-        // inisialisasi receipt printer
-        $printer = new ReceiptPrinter;
-        $printer->centerAlign()->text('Toko SiMas');
-        // $printer->centerAlign()->text('Jl. Raya Cikarang');
-        $printer->feed(1);
-
-        $printer->leftAlign()->doubleLine();
-        $printer->twoColumnText('No Nota', Str::padRight(': ' . $transaksi->kode, 18));
-        $printer->twoColumnText('Waktu', Str::padRight(': ' . Carbon::parse($transaksi->updated_at)->format('d-m-Y H:i'), 18));
-        $printer->twoColumnText('Kasir', Str::padRight(': ' . $transaksi->user->nama, 18));
-
-        $printer->leftAlign()->line();
+        $printer->text(self::line());
         foreach ($transaksi->transaksi_detail as $detail) {
-            $printer->twoColumnText($detail->jumlah_beli . ' ' . $detail->produk->nama, number_format($detail->harga_total, 0, ',', '.'));
+            $printer->text(self::dualColumnText($detail->jumlah_beli . ' ' . $detail->produk->nama, number_format($detail->harga_total, 0, ',', '.')));
         }
+        // $printer->text(self::dualColumnText('12345678901234567890123', '12345678901'));
 
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Subtotal ' . $transaksi->transaksi_detail->count() . ' Produk', number_format($transaksi->transaksi_detail->sum('harga_total'), 0, ',', '.'));
-        $printer->twoColumnText('Total Tagihan', number_format($transaksi->bayar->harga_total, 0, ',', '.'));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Subtotal ' . $transaksi->transaksi_detail->count() . ' Produk', number_format($transaksi->transaksi_detail->sum('harga_total'), 0, ',', '.')));
+        $printer->text(self::dualColumnText('Total Tagihan', number_format($transaksi->bayar->harga_total, 0, ',', '.')));
 
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Tunai', number_format($transaksi->bayar->bayar, 0, ',', '.'));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Tunai', number_format($transaksi->bayar->bayar, 0, ',', '.')));
         if ($transaksi->bayar->kembalian >= 0) {
-            $printer->twoColumnText('Kembalian', number_format($transaksi->bayar->kembalian, 0, ',', '.'));
+            $printer->text(self::dualColumnText('Kembalian', number_format($transaksi->bayar->kembalian, 0, ',', '.')));
         } else {
-            $printer->twoColumnText('Hutang', number_format($transaksi->bayar->hutang, 0, ',', '.'));
+            $printer->text(self::dualColumnText('Hutang', number_format($transaksi->bayar->hutang, 0, ',', '.')));
         }
 
-        $printer->leftAlign()->doubleLine();
-        $printer->feed(1);
-        $printer->centerAlign()->text('Terima kasih telah berbelanja');
-        $printer->centerAlign()->text('Insya Allah Penuh Berkah');
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text(self::doubleLine());
+        $printer->text("Terima kasih telah berbelanja\n");
+        $printer->text("Insya Allah Penuh Berkah\n");
+        $printer->feed();
+
         $printer->cut();
-
-        $text = (string) $printer;
-
-        // dd($text);
-
-        Printing::newPrintTask()
-            ->printer(self::$printerId)
-            ->content($text) // content will be base64_encoded if using PrintNode
-            ->send();
+        $printer->close();
     }
 
-    public static function printTutupKasir($SesiId)
+    public static function printTutupKasir($sesiId)
     {
-        $sesi = Sesi::findOrFail($SesiId);
+        $sesi = Sesi::findOrFail($sesiId);
         $waktuMulai = Carbon::parse($sesi->waktu_mulai);
         $waktuSelesai = Carbon::parse($sesi->waktu_selesai);
 
@@ -86,55 +81,53 @@ class PrintController extends Controller
         $kasMasuk = $kasKasir->where('jenis', 'masuk')->sum('nominal');
         $kasKeluar = $kasKasir->where('jenis', 'keluar')->sum('nominal');
 
-        // $data = $this->getData($waktuMulai, $waktuSelesai);
         $data = self::getData($waktuMulai, $waktuSelesai);
         $saldoAkhir = $data['terimaPembayaran'] + $kasMasuk - $kasKeluar + $sesi->saldo_awal;
 
-        // inisialisasi receipt printer
-        $printer = new ReceiptPrinter;
-        $printer->centerAlign()->text('Toko SiMas');
-        // $printer->centerAlign()->text('Jl. Raya Cikarang');
-        $printer->feed(1);
+        $connector = new WindowsPrintConnector(self::$printerName);
+        $printer = new Printer($connector);
 
-        $printer->leftAlign()->doubleLine();
-        $printer->centerAlign()->text('LAPORAN TUTUP KASIR');
-        $printer->centerAlign()->text('TRANSAKSI PENJUALAN');
-        $printer->feed(1);
-        $printer->twoColumnText('Kasir', Str::padRight(': ' . $sesi->user->nama, 18));
-        $printer->twoColumnText('Waktu Buka', Str::padRight(': ' . Carbon::parse($sesi->waktu_mulai)->format('d-m-Y H:i'), 18));
-        $printer->twoColumnText('Waktu Tutup', Str::padRight(': ' . Carbon::parse($sesi->waktu_selesai)->format('d-m-Y H:i'), 18));
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Modal Awal', number_format($sesi->saldo_awal, 0, ',', '.'));
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Total Penjualan', number_format($data['totalPenjualan'], 0, ',', '.'));
-        $printer->twoColumnText('Terima Pembayaran', number_format($data['terimaPembayaran'], 0, ',', '.'));
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Kas Masuk', number_format($kasMasuk, 0, ',', '.'));
-        $printer->twoColumnText('Kas Keluar', number_format($kasKeluar, 0, ',', '.'));
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Hutang', number_format($data['sumHutang'], 0, ',', '.'));
-        $printer->twoColumnText('Refund', number_format($data['sumRefund'], 0, ',', '.'));
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Saldo Akhir', number_format($saldoAkhir, 0, ',', '.'));
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Total Transaksi', number_format($data['totalTransaksi'], 0, ',', '.'));
-        $printer->twoColumnText('Total Transaksi Hutang', number_format($data['totalTransaksiHutang'], 0, ',', '.'));
-        $printer->leftAlign()->line();
-        $printer->twoColumnText('Total Tunai Sistem', number_format($saldoAkhir, 0, ',', '.'));
-        $printer->twoColumnText('Total Tunai Aktual', number_format($sesi->saldo_akhir, 0, ',', '.'));
-        $printer->twoColumnText('Selisih', number_format(abs($saldoAkhir - $sesi->saldo_akhir), 0, ',', '.'));
-        $printer->leftAlign()->doubleLine();
-        $printer->feed(1);
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+        $printer->text("Toko SiMas\n");
+        $printer->selectPrintMode();
+        $printer->text("Jl. Toyareka Raya\n");
+        $printer->feed();
+
+        $printer->text(self::doubleLine());
+        $printer->text("LAPORAN TUTUP KASIR\n");
+        $printer->text("TRANSAKSI PENJUALAN\n");
+        $printer->feed();
+
+        $printer->setJustification(Printer::JUSTIFY_LEFT);
+        $printer->text(self::dualColumnText('Kasir', ': ' . Str::padRight($sesi->user->nama, 16)));
+        $printer->text(self::dualColumnText('Waktu Buka', ': ' . Str::padRight(Carbon::parse($sesi->waktu_mulai)->format('d-m-Y H:i'), 16)));
+        $printer->text(self::dualColumnText('Waktu Tutup', ': ' . Str::padRight(Carbon::parse($sesi->waktu_selesai)->format('d-m-Y H:i'), 16)));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Modal Awal', number_format($sesi->saldo_awal, 0, ',', '.')));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Total Penjualan', number_format($data['totalPenjualan'], 0, ',', '.')));
+        $printer->text(self::dualColumnText('Terima Pembayaran', number_format($data['terimaPembayaran'], 0, ',', '.')));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Kas Masuk', number_format($kasMasuk, 0, ',', '.')));
+        $printer->text(self::dualColumnText('Kas Keluar', number_format($kasKeluar, 0, ',', '.')));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Hutang', number_format($data['sumHutang'], 0, ',', '.')));
+        $printer->text(self::dualColumnText('Refund', number_format($data['sumRefund'], 0, ',', '.')));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Saldo Akhir', number_format($saldoAkhir, 0, ',', '.')));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Total Transaksi', number_format($data['totalTransaksi'], 0, ',', '.')));
+        $printer->text(self::dualColumnText('Total Transaksi Hutang', number_format($data['totalTransaksiHutang'], 0, ',', '.')));
+        $printer->text(self::line());
+        $printer->text(self::dualColumnText('Total Tunai Sistem', number_format($saldoAkhir, 0, ',', '.')));
+        $printer->text(self::dualColumnText('Total Tunai Aktual', number_format($sesi->saldo_akhir, 0, ',', '.')));
+        $printer->text(self::dualColumnText('Selisih', number_format(abs($saldoAkhir - $sesi->saldo_akhir), 0, ',', '.')));
+        $printer->text(self::doubleLine());
+        $printer->feed();
+
         $printer->cut();
-
-        $text = (string) $printer;
-
-        // dd($text);
-
-        Printing::newPrintTask()
-            ->printer(self::$printerId)
-            ->content($text) // content will be base64_encoded if using PrintNode
-            ->send();
+        $printer->close();
     }
 
     public static function getData($waktuMulai, $waktuSelesai)
@@ -190,5 +183,28 @@ class PrintController extends Controller
             'totalTransaksiHutang' => $totalTransaksiHutang,
             'totalProdukTerjual' => $totalProdukTerjual
         ];
+    }
+
+    public static function dualColumnText(string $left, string $right): string
+    {
+        $remaining = self::$lineCharacterLength - (strlen($left) + strlen($right));
+
+        if ($remaining <= 0) {
+            $remaining = 1;
+        }
+
+        $left = substr($left, 0, 22);
+
+        return $left . str_repeat(' ', $remaining) . $right . "\n";
+    }
+
+    public static function doubleLine(): string
+    {
+        return str_repeat('=', self::$lineCharacterLength) . "\n";
+    }
+
+    public static function line(): string
+    {
+        return str_repeat('-', self::$lineCharacterLength) . "\n";
     }
 }
