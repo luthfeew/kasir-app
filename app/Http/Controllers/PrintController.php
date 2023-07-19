@@ -45,7 +45,7 @@ class PrintController extends Controller
         foreach ($transaksi->transaksi_detail as $detail) {
             $printer->text(self::dualColumnText($detail->jumlah_beli . ' ' . $detail->produk->nama, number_format($detail->harga_total, 0, ',', '.')));
         }
-        // $printer->text(self::dualColumnText('12345678901234567890123', '12345678901'));
+        // $printer->text(self::dualColumnText('1234567890', '1.000'));
 
         $printer->text(self::line());
         $printer->text(self::dualColumnText('Subtotal ' . $transaksi->transaksi_detail->count() . ' Produk', number_format($transaksi->transaksi_detail->sum('harga_total'), 0, ',', '.')));
@@ -187,13 +187,13 @@ class PrintController extends Controller
 
     public static function dualColumnText(string $left, string $right): string
     {
+        $left = substr($left, 0, 22);
+
         $remaining = self::$lineCharacterLength - (strlen($left) + strlen($right));
 
         if ($remaining <= 0) {
             $remaining = 1;
         }
-
-        $left = substr($left, 0, 22);
 
         return $left . str_repeat(' ', $remaining) . $right . "\n";
     }
