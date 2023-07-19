@@ -58,6 +58,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Produk</th>
+                        <th>Satuan</th>
                         <th>Harga Satuan</th>
                         <th>QTY</th>
                         <th class="text-right">Subtotal</th>
@@ -70,6 +71,7 @@
                             {{ $loop->iteration }}
                         </td>
                         <td>{{ $item->produk->nama }}</td>
+                        <td>{{ $item->produk->satuan }}</td>
                         <td>
                             @if ($item->produk->harga_jual != $item->harga_satuan)
                             <del>@rupiah($item->produk->harga_jual)</del>
