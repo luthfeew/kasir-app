@@ -14,7 +14,7 @@
                     <td>{{ $transaksi->nama_pembeli }}</td>
                     <td>{{ $transaksi->user->nama }}</td>
                     <td>@rupiah($transaksi->bayar->harga_total)</td>
-                    <td>{{ $transaksi->created_at }}</td>
+                    <td>{{ $transaksi->waktu_transaksi }}</td>
                     <td>
                         @if ($transaksi->status == 'selesai')
                         <span class="badge badge-success">Selesai</span>

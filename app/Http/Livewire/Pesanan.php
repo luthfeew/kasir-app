@@ -158,7 +158,7 @@ class Pesanan extends Component
         if (!$transaksi) {
             $transaksi = Transaksi::create([
                 'user_id' => Auth::id(),
-                'kode' => 'TRX' . date('ymd') . Str::padLeft(Transaksi::where('user_id', Auth::id())->whereDate('created_at', date('Y-m-d'))->count() + 1, 4, '0'),
+                'kode' => 'TRX' . date('ymd') . Str::padLeft(Transaksi::where('user_id', Auth::id())->whereDate('waktu_transaksi', date('Y-m-d'))->count() + 1, 4, '0'),
                 'status' => 'proses'
             ]);
         }

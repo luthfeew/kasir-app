@@ -13,7 +13,7 @@
             <b>No Transaksi: #{{ $transaksi->kode }}</b><br>
             <br>
             <b>Kasir:</b> {{ $transaksi->user->nama }}<br>
-            <b>Waktu:</b> {{ $transaksi->created_at }}<br>
+            <b>Waktu:</b> {{ $transaksi->waktu_transaksi }}<br>
             <b>Nama Pelanggan:</b> {{ $transaksi->pelanggan->nama ?? $transaksi->nama_pembeli }}<br>
             <h3>Harga Total:</b> @rupiah($transaksi->bayar->harga_total)</h3>
 

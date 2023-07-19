@@ -54,14 +54,14 @@ class TopReport extends Component
                 ->first()->harga_total;
         }
 
-        // group by produk_id. sum stok and harga_total
+        // group by produk_id. sum stok and harga_total. order by produk_terjual ascending
         $inventaris = $inventaris->groupBy('produk_id')->map(function ($item) {
             return [
                 'nama_produk' => $item->first()->produk->nama,
                 'produk_terjual' => $item->sum('stok'),
                 'harga_total' => $item->sum('harga_total'),
             ];
-        });
+        })->sortBy('produk_terjual');
 
         $totalProdukTerjual = $inventaris->sum('produk_terjual');
         $totalHargaTotal = $inventaris->sum('harga_total');

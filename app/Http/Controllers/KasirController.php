@@ -74,6 +74,7 @@ class KasirController extends Controller
         $transaksi->is_lunas = $request->bayar >= $request->tagihan;
         $transaksi->is_hutang = $request->bayar < $request->tagihan;
         $transaksi->status = 'selesai';
+        $transaksi->waktu_transaksi = now();
         $transaksi->save();
 
         Bayar::create([
@@ -135,9 +136,10 @@ class KasirController extends Controller
             'parent_id' => $id,
             'user_id' => Auth::user()->id,
             'pelanggan_id' => $transaksi->pelanggan_id,
-            'kode' => 'TRX' . date('ymd') . Str::padLeft(Transaksi::where('user_id', Auth::id())->whereDate('created_at', date('Y-m-d'))->count() + 1, 4, '0'),
+            'kode' => 'TRX' . date('ymd') . Str::padLeft(Transaksi::where('user_id', Auth::id())->whereDate('waktu_transaksi', date('Y-m-d'))->count() + 1, 4, '0'),
             'status' => 'proses',
             'nama_pembeli' => $transaksi->nama_pembeli,
+            'waktu_transaksi' => now(),
         ]);
 
         // redirect ke halaman kasir dengan transaksi baru

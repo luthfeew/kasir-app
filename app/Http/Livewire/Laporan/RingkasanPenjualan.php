@@ -34,9 +34,9 @@ class RingkasanPenjualan extends Component
     {
         $transaksiAll = Transaksi::where('status', 'selesai')
             ->when($customTanggalAwal && $customTanggalAkhir, function ($query) use ($customTanggalAwal, $customTanggalAkhir) {
-                return $query->whereBetween('created_at', [$customTanggalAwal . ' 00:00:00', $customTanggalAkhir . ' 23:59:59']);
+                return $query->whereBetween('waktu_transaksi', [$customTanggalAwal . ' 00:00:00', $customTanggalAkhir . ' 23:59:59']);
             }, function ($query) {
-                return $query->whereBetween('created_at', [$this->tanggalAwal . ' 00:00:00', $this->tanggalAkhir . ' 23:59:59']);
+                return $query->whereBetween('waktu_transaksi', [$this->tanggalAwal . ' 00:00:00', $this->tanggalAkhir . ' 23:59:59']);
             })
             ->get();
 

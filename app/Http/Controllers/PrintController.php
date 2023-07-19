@@ -38,7 +38,7 @@ class PrintController extends Controller
         $printer->setJustification(Printer::JUSTIFY_LEFT);
         $printer->text(self::doubleLine());
         $printer->text(self::dualColumnText('No Nota', ': ' . Str::padRight($transaksi->kode, 16)));
-        $printer->text(self::dualColumnText('Waktu', ': ' . Str::padRight(Carbon::parse($transaksi->updated_at)->format('d-m-Y H:i'), 16)));
+        $printer->text(self::dualColumnText('Waktu', ': ' . Str::padRight(Carbon::parse($transaksi->waktu_transaksi)->format('d-m-Y H:i'), 16)));
         $printer->text(self::dualColumnText('Kasir', ': ' . Str::padRight($transaksi->user->nama, 16)));
 
         $printer->text(self::line());
@@ -133,7 +133,7 @@ class PrintController extends Controller
     public static function getData($waktuMulai, $waktuSelesai)
     {
         $transaksiAll = Transaksi::where('status', 'selesai')
-            ->whereBetween('updated_at', [$waktuMulai, $waktuSelesai])
+            ->whereBetween('waktu_transaksi', [$waktuMulai, $waktuSelesai])
             ->get();
 
         // totalPenjualan = sum harga_total from transaksi detail table

@@ -18,10 +18,10 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        // transaksi where user id = auth user id, and status != proses, sort by created_at desc
+        // transaksi where user id = auth user id, and status != proses, sort by waktu_transaksi desc
         $transaksis = Transaksi::where('user_id', Auth::user()->id)
             ->where('status', '!=', 'proses')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('waktu_transaksi', 'desc')
             ->get();
         return view('penjualan.index', compact('transaksis'));
     }
@@ -131,6 +131,7 @@ class PenjualanController extends Controller
             'nama_pembeli' => $transaksi->nama_pembeli,
             'is_refund' => true,
             'alasan_refund' => $request->alasan_refund,
+            'waktu_transaksi' => now(),
         ]);
 
         // $newTransaksi = Transaksi::where('parent_id', $transaksi->id)->first();

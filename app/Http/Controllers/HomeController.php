@@ -106,7 +106,7 @@ class HomeController extends Controller
     public function getTerimaPembayaran($waktuMulai, $waktuSelesai)
     {
         $transaksiAll = Transaksi::where('status', 'selesai')
-            ->whereBetween('updated_at', [$waktuMulai, $waktuSelesai])
+            ->whereBetween('waktu_transaksi', [$waktuMulai, $waktuSelesai])
             ->get();
 
         // totalPenjualan = sum harga_total from transaksi detail table
