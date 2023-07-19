@@ -29,9 +29,9 @@ class CariProduk extends Component
         $this->cari = '';
     }
 
-    public function enter()
+    public function enter($nama)
     {
-        $this->emit('passEnter', $this->cari);
+        $this->emit('passEnter', $nama);
         $this->cari = '';
     }
 }

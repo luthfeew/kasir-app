@@ -42,8 +42,8 @@
     document.getElementById("myInput").addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
             // livewire emit tambahProduk with input value
-            // Livewire.emit('tambahEnter', this.value);
-            Livewire.emit('enter');
+            Livewire.emit('enter', this.value);
+            // Livewire.emit('enter');
             // clear myinput value
             // this.value = '';
         }
