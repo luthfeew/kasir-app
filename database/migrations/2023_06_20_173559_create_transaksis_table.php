@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('is_hutang')->default(false);
             $table->boolean('is_refund')->default(false);
             $table->string('alasan_refund')->nullable();
+            $table->timestamp('waktu_transaksi')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

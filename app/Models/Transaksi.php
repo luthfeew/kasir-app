@@ -22,6 +22,7 @@ class Transaksi extends Model
         'is_hutang',
         'is_refund',
         'alasan_refund',
+        'waktu_transaksi'
     ];
 
     // transaksi punya satu parent

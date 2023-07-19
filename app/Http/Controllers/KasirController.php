@@ -101,9 +101,9 @@ class KasirController extends Controller
         return redirect()->route('kasir')->with('success', 'Transaksi berhasil disimpan.');
     }
 
-    public function hapus(string $id)
+    public function hapus(string $id = null)
     {
-        $transaksi = Transaksi::findOrFail($id);
+        $transaksi = $this->getTransaksi($id);
         $transaksi->forceDelete();
 
         return redirect()->route('kasir')->with('success', 'Transaksi berhasil dihapus.');
