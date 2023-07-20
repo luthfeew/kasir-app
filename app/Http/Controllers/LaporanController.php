@@ -9,6 +9,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Kas;
 use App\Models\Sesi;
+use App\Models\Transaksi;
+use App\Models\Pelanggan;
+use App\Models\Bayar;
 use Illuminate\Support\Carbon;
 
 class LaporanController extends Controller
@@ -26,6 +29,17 @@ class LaporanController extends Controller
     public function tutupKasir()
     {
         return view('laporan.tutup_kasir');
+    }
+
+    public function hutang()
+    {
+        // $transaksiHutang = Transaksi::where('is_hutang', true)->where('is_lunas', false)->get();
+        // transaksi hutang where is_hutang is true and is_lunas is false group by pelanggan_id if exists if not group by nama_pembeli
+        $transaksiHutang = Transaksi::where('is_hutang', true)->where('is_lunas', false)->get()->groupBy(function ($item) {
+            return $item->pelanggan_id ? $item->pelanggan->nama : $item->nama_pembeli;
+        });
+
+        return view('laporan.hutang', compact('transaksiHutang'));
     }
 
     public function kasKasir()

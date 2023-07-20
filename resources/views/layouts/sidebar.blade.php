@@ -99,6 +99,12 @@
                                 <p>Kas Kasir</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('laporan.hutang') }}" class="nav-link @if(Request::segment(2) == 'hutang') active @endif">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Hutang</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item">

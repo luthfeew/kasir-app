@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/laporan/top_report', [LaporanController::class, 'topReport'])->name('laporan.top_report');
     Route::get('/laporan/tutup_kasir', [LaporanController::class, 'tutupKasir'])->name('laporan.tutup_kasir');
     Route::get('/laporan/kas_kasir', [LaporanController::class, 'kasKasir'])->name('laporan.kas_kasir');
+    Route::get('/laporan/hutang', [LaporanController::class, 'hutang'])->name('laporan.hutang');
     Route::get('/laporan/kas_kasir/create', [LaporanController::class, 'kasKasirCreate'])->name('laporan.kas_kasir.create');
     Route::post('/laporan/kas_kasir/create', [LaporanController::class, 'kasKasirStore'])->name('laporan.kas_kasir.store');
 
