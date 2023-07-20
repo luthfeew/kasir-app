@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use App\Models\Produk;
 use App\Models\ProdukKategori;
 use App\Models\ProdukGrosir;
+use App\Models\Inventaris;
 
 class ProdukController extends Controller
 {
@@ -16,7 +16,7 @@ class ProdukController extends Controller
     public function index()
     {
         $data = Produk::all();
-        return view('gudang.produk', compact('data'));
+        return view('gudang.produk.index', compact('data'));
     }
 
     /**
@@ -24,8 +24,8 @@ class ProdukController extends Controller
      */
     public function create()
     {
-        $kategori = ProdukKategori::all();
-        return view('gudang.produk-tambah', compact('kategori'));
+        $kategori = ProdukKategori::all()->pluck('nama', 'id');
+        return view('gudang.produk.create', compact('kategori'));
     }
 
     /**
@@ -34,51 +34,51 @@ class ProdukController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
+
+        $request->merge([
+            'minimal' => array_filter($request->minimal),
+            'grosir' => array_filter($request->grosir),
+        ]);
+
         $request->validate(
             [
                 'nama' => 'required|unique:produks,nama',
                 'sku' => 'required|unique:produks,sku',
-                'stok' => 'required|numeric',
-                'harga_beli' => 'required|numeric',
-                'harga_jual' => 'required|numeric',
+                'stok' => 'required|numeric|min:1',
+                'harga_beli' => 'required|numeric|min:1',
+                'harga_jual' => 'required|numeric|gt:harga_beli',
                 'satuan' => 'required',
                 'produk_kategori_id' => 'required',
+                'harga_pelanggan' => 'nullable|numeric|gt:harga_beli|lt:harga_jual',
+                'minimal.*' => 'nullable|numeric|min:1',
+                'grosir.*' => 'nullable|numeric|gt:harga_beli|lt:harga_jual',
             ],
-            [
-                'nama.required' => 'Nama produk harus diisi',
-                'nama.unique' => 'Nama produk sudah ada',
-                'sku.required' => 'SKU produk harus diisi',
-                'sku.unique' => 'SKU produk sudah ada',
-                'stok.required' => 'Stok produk harus diisi',
-                'stok.numeric' => 'Stok produk harus berupa angka',
-                'harga_beli.required' => 'Harga beli produk harus diisi',
-                'harga_beli.numeric' => 'Harga beli produk harus berupa angka',
-                'harga_jual.required' => 'Harga jual produk harus diisi',
-                'harga_jual.numeric' => 'Harga jual produk harus berupa angka',
-                'satuan.required' => 'Satuan produk harus diisi',
-                'produk_kategori_id.required' => 'Kategori produk harus diisi',
-            ]
+            $this->pesanError()
         );
 
-        $produk = Produk::create($request->all());
+        $produk = Produk::create([
+            'produk_kategori_id' => $request->produk_kategori_id,
+            'nama' => $request->nama,
+            'sku' => $request->sku,
+            'harga_beli' => $request->harga_beli,
+            'harga_jual' => $request->harga_jual,
+            'harga_pelanggan' => $request->harga_pelanggan,
+            'satuan' => $request->satuan,
+        ]);
 
-        // get kelipatan dan harga
-        $x = array_combine($request->kelipatan, $request->harga);
-        // remove array with empty key or value
-        $x = Arr::where($x, function ($value, $key) {
-            return $key != null && $value != null;
-        });
-        // unpair array kelipatan and harga
-        $kelipatan = array_keys($x);
-        $harga = array_values($x);
+        Inventaris::create([
+            'produk_id' => $produk->id,
+            'stok' => $request->stok,
+        ]);
 
-        // save to produk_grosir table
-        for ($i = 0; $i < count($kelipatan); $i++) {
-            ProdukGrosir::create([
-                'produk_id' => $produk->id,
-                'kelipatan' => $kelipatan[$i],
-                'harga' => $harga[$i],
-            ]);
+        if ($request->filled('minimal')) {
+            foreach ($request->minimal as $key => $value) {
+                ProdukGrosir::create([
+                    'produk_id' => $produk->id,
+                    'minimal' => $value,
+                    'harga_grosir' => $request->grosir[$key],
+                ]);
+            }
         }
 
         return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan');
@@ -89,8 +89,7 @@ class ProdukController extends Controller
      */
     public function show(string $id)
     {
-        $data = Produk::find($id);
-        return view('gudang.produk-detail', compact('data'));
+        //
     }
 
     /**
@@ -98,10 +97,11 @@ class ProdukController extends Controller
      */
     public function edit(string $id)
     {
-        $data = Produk::find($id);
-        $kategori = ProdukKategori::all();
+        $data = Produk::findOrFail($id);
+        $kategori = ProdukKategori::all()->pluck('nama', 'id');
         $grosir = ProdukGrosir::where('produk_id', $id)->get();
-        return view('gudang.produk-edit', compact('data', 'kategori', 'grosir'));
+        $stok = Inventaris::where('produk_id', $id)->sum('stok');
+        return view('gudang.produk.edit', compact('data', 'kategori', 'grosir', 'stok'));
     }
 
     /**
@@ -109,56 +109,68 @@ class ProdukController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $request->merge([
+            'minimal' => array_filter($request->minimal),
+            'grosir' => array_filter($request->grosir),
+        ]);
+
         $request->validate(
             [
                 'nama' => 'required|unique:produks,nama,' . $id,
                 'sku' => 'required|unique:produks,sku,' . $id,
-                'stok' => 'required|numeric',
-                'harga_beli' => 'required|numeric',
-                'harga_jual' => 'required|numeric',
+                'stok' => 'required|numeric|min:1',
+                'harga_beli' => 'required|numeric|min:1',
+                'harga_jual' => 'required|numeric|gt:harga_beli',
                 'satuan' => 'required',
                 'produk_kategori_id' => 'required',
+                'harga_pelanggan' => 'nullable|numeric|gt:harga_beli',
+                'minimal.*' => 'nullable|numeric|min:1',
+                'grosir.*' => 'nullable|numeric|gt:harga_beli|lt:harga_jual',
             ],
-            [
-                'nama.required' => 'Nama produk harus diisi',
-                'nama.unique' => 'Nama produk sudah ada',
-                'sku.required' => 'SKU produk harus diisi',
-                'sku.unique' => 'SKU produk sudah ada',
-                'stok.required' => 'Stok produk harus diisi',
-                'stok.numeric' => 'Stok produk harus berupa angka',
-                'harga_beli.required' => 'Harga beli produk harus diisi',
-                'harga_beli.numeric' => 'Harga beli produk harus berupa angka',
-                'harga_jual.required' => 'Harga jual produk harus diisi',
-                'harga_jual.numeric' => 'Harga jual produk harus berupa angka',
-                'satuan.required' => 'Satuan produk harus diisi',
-                'produk_kategori_id.required' => 'Kategori produk harus diisi',
-            ]
+            $this->pesanError()
         );
 
-        Produk::find($id)->update($request->all());
+        $produk = Produk::findOrFail($id);
+        $produk->update([
+            'produk_kategori_id' => $request->produk_kategori_id,
+            'nama' => $request->nama,
+            'sku' => $request->sku,
+            'harga_beli' => $request->harga_beli,
+            'harga_jual' => $request->harga_jual,
+            'harga_pelanggan' => $request->harga_pelanggan,
+            'satuan' => $request->satuan,
+        ]);
 
-        // get kelipatan dan harga
-        $x = array_combine($request->kelipatan, $request->harga);
-        // remove array with empty key or value
-        $x = Arr::where($x, function ($value, $key) {
-            return $key != null && $value != null;
-        });
-        // unpair array kelipatan and harga
-        $kelipatan = array_keys($x);
-        $harga = array_values($x);
-
-        // remove all data in produk_grosir table
-        ProdukGrosir::where('produk_id', $id)->delete();
-        // save to produk_grosir table
-        for ($i = 0; $i < count($kelipatan); $i++) {
-            ProdukGrosir::create([
-                'produk_id' => $id,
-                'kelipatan' => $kelipatan[$i],
-                'harga' => $harga[$i],
+        $stok = Inventaris::where('produk_id', $id)->sum('stok');
+        // check if stok is different with request stok
+        if ($stok != $request->stok) {
+            // if different, create new record so the sum of stok is equal with request stok
+            Inventaris::create([
+                'produk_id' => $produk->id,
+                'stok' => $request->stok - $stok,
             ]);
         }
 
-        return redirect()->route('produk.index')->with('success', 'Produk berhasil diubah');
+        if ($request->filled('minimal')) {
+            foreach ($request->minimal as $key => $value) {
+                ProdukGrosir::updateOrCreate(
+                    [
+                        'produk_id' => $produk->id,
+                        'minimal' => $value,
+                    ],
+                    [
+                        'harga_grosir' => $request->grosir[$key],
+                    ]
+                );
+            }
+        }
+
+        // delete old record if not exist in request
+        ProdukGrosir::where('produk_id', $produk->id)
+            ->whereNotIn('minimal', $request->minimal)
+            ->forceDelete();
+
+        return redirect()->route('produk.index')->with('success', 'Produk berhasil diupdate');
     }
 
     /**
@@ -166,12 +178,38 @@ class ProdukController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = Produk::find($id);
-        $data->delete();
+        $produk = Produk::findOrFail($id);
+        $produk->forceDelete();
 
-        // also delete data in produk_grosir table
-        ProdukGrosir::where('produk_id', $id)->delete();
+        return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus');
+    }
 
-        return redirect()->route('produk.index')->with('success', 'Data berhasil dihapus');
+    public static function pesanError()
+    {
+        return [
+            'nama.required' => 'Nama produk harus diisi',
+            'nama.unique' => 'Nama produk sudah ada',
+            'sku.required' => 'SKU produk harus diisi',
+            'sku.unique' => 'SKU produk sudah ada',
+            'stok.required' => 'Stok produk harus diisi',
+            'stok.numeric' => 'Stok produk harus berupa angka',
+            'stok.min' => 'Stok produk minimal 1',
+            'harga_beli.required' => 'Harga beli produk harus diisi',
+            'harga_beli.numeric' => 'Harga beli produk harus berupa angka',
+            'harga_beli.min' => 'Harga beli produk minimal 1',
+            'harga_jual.required' => 'Harga jual produk harus diisi',
+            'harga_jual.numeric' => 'Harga jual produk harus berupa angka',
+            'harga_jual.gt' => 'Harga jual produk harus lebih besar dari harga beli',
+            'satuan.required' => 'Satuan produk harus diisi',
+            'produk_kategori_id.required' => 'Kategori produk harus diisi',
+            'harga_pelanggan.numeric' => 'Harga pelanggan harus berupa angka',
+            'harga_pelanggan.gt' => 'Harga pelanggan harus lebih besar dari harga beli',
+            'harga_pelanggan.lt' => 'Harga pelanggan harus lebih kecil dari harga jual',
+            'minimal.*.numeric' => 'Minimal grosir produk harus berupa angka',
+            'minimal.*.min' => 'Minimal grosir produk minimal 1',
+            'grosir.*.numeric' => 'Harga grosir produk harus berupa angka',
+            'grosir.*.gt' => 'Harga grosir produk harus lebih besar dari harga beli',
+            'grosir.*.lt' => 'Harga grosir produk harus lebih kecil dari harga jual',
+        ];
     }
 }

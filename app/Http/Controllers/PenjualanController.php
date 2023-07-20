@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Produk;
-use App\Models\ProdukGrosir;
+use Illuminate\Support\Str;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Bayar;
+use App\Models\Inventaris;
 use App\Http\Controllers\KasirController;
+use Illuminate\Support\Facades\Auth;
 
 class PenjualanController extends Controller
 {
@@ -17,13 +18,11 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        // get all transaksi where status = selesai, order by created_at desc, user_id = auth()->user()->id
-        $transaksis = Transaksi::where('status', 'selesai')
-        ->orWhere('status', 'refund')
-        ->where('user_id', Auth::user()->id)
-        ->orderBy('created_at', 'desc')
-        ->get();
-
+        // transaksi where user id = auth user id, and status != proses, sort by waktu_transaksi desc
+        $transaksis = Transaksi::where('user_id', Auth::user()->id)
+            ->where('status', '!=', 'proses')
+            ->orderBy('waktu_transaksi', 'desc')
+            ->get();
         return view('penjualan.index', compact('transaksis'));
     }
 
@@ -48,21 +47,17 @@ class PenjualanController extends Controller
      */
     public function show(string $id)
     {
-        $transaksi = Transaksi::where('id', $id)->first();
+        $transaksi = Transaksi::findOrFail($id);
         $transaksiDetail = TransaksiDetail::where('transaksi_id', $id)->get();
-
-        // cek jika jumlah produk sudah bisa grosir, maka tampilkan harga grosir
+        // is_refundable = true jika ada item di transaksi detail yang memiliki jumlah_beli > jumlah_refund
+        $is_refundable = false;
         foreach ($transaksiDetail as $item) {
-            $produk = Produk::find($item->produk_id);
-            $produkGrosir = ProdukGrosir::where('produk_id', $produk->id)->get();
-            foreach ($produkGrosir as $grosir) {
-                if (abs($item->jumlah) >= $grosir->kelipatan) {
-                    $item->produk->harga_jual_grosir = $grosir->harga;
-                }
+            if ($item->jumlah_beli > $item->jumlah_refund) {
+                $is_refundable = true;
             }
         }
 
-        return view('penjualan.detail', compact('transaksi', 'transaksiDetail'));
+        return view('penjualan.show', compact('transaksi', 'transaksiDetail', 'is_refundable'));
     }
 
     /**
@@ -91,68 +86,86 @@ class PenjualanController extends Controller
 
     public function refund(string $id)
     {
-        $transaksi = Transaksi::where('id', $id)->first();
+        $transaksi = Transaksi::findOrFail($id);
         $transaksiDetail = TransaksiDetail::where('transaksi_id', $id)->get();
-
-        // cek jika jumlah produk sudah bisa grosir, maka tampilkan harga grosir
+        // jumlah_beli - jumlah_refund
         foreach ($transaksiDetail as $item) {
-            $produk = Produk::find($item->produk_id);
-            $produkGrosir = ProdukGrosir::where('produk_id', $produk->id)->get();
-            foreach ($produkGrosir as $grosir) {
-                if ($item->jumlah >= $grosir->kelipatan) {
-                    $item->produk->harga_jual = $grosir->harga;
-                }
-            }
+            $item->jumlah_beli = $item->jumlah_beli - $item->jumlah_refund;
         }
 
         return view('penjualan.refund', compact('transaksi', 'transaksiDetail'));
     }
 
-    public function refund_store(Request $request)
+    public function refundStore(Request $request, string $id)
     {
         // dd($request->all());
+        // dd(KasirController::test());
 
         $request->validate([
-            'refund' => 'required',
-            'qty' => 'required',
+            'alasan_refund' => 'required',
+            'produk_id' => 'required|array',
+            'jumlah_beli' => 'required|array',
+            'harga_satuan' => 'required|array',
+            'harga_total' => 'required|array',
         ]);
 
-        $old = Transaksi::find($request->transaksi_id);
+        // $transaksi = Transaksi::findOrFail($id);
+        // // change is_refunded to true
+        // $transaksi->is_refunded = true;
+        // $transaksi->save();
 
-        // check if old transaksi is refunded
-        if ($old->refunded) {
-            return redirect()->back()->with('error', 'Transaksi ini sudah pernah direfund');
+        // ubah jumlah refund di transaksi detail jumlah sekarang = jumlah sebelumnya + jumlah refund
+        foreach ($request->jumlah_beli as $key => $value) {
+            $transaksiDetail = TransaksiDetail::find($key);
+            $transaksiDetail->jumlah_refund = $transaksiDetail->jumlah_refund + $value;
+            $transaksiDetail->save();
         }
 
-        $refund = $request->refund;
+        $transaksi = Transaksi::find($id);
+        Transaksi::create([
+            'parent_id' => $transaksi->id,
+            'user_id' => $transaksi->user_id,
+            'pelanggan_id' => $transaksi->pelanggan_id,
+            'kode' => Str::replaceFirst('TRX', 'RFN', $transaksi->kode),
+            'status' => 'selesai',
+            'nama_pembeli' => $transaksi->nama_pembeli,
+            'is_refund' => true,
+            'alasan_refund' => $request->alasan_refund,
+            'waktu_transaksi' => now(),
+        ]);
 
-        if ($refund) {
-            $old->refunded = true;
-            $old->save();
-
-            $transaksi = Transaksi::create([
-                'status' => 'refund',
-                'nama_pelanggan' => $request->nama_pelanggan,
-                'alasan_refund' => $request->alasan_refund,
-                'user_id' => Auth::user()->id,
-                'parent_id' => $request->transaksi_id,
-                'harga_total' => $request->harga_total,
+        // $newTransaksi = Transaksi::where('parent_id', $transaksi->id)->first();
+        $newTransaksi = Transaksi::where('parent_id', $transaksi->id)->get()->last(); 
+        // foreach jumlah_beli, harga_satuan, harga_total, create new transaksi detail
+        foreach ($request->jumlah_beli as $key => $value) {
+            TransaksiDetail::create([
+                'transaksi_id' => $newTransaksi->id,
+                // 'produk_id' => $key,
+                'produk_id' => $request->produk_id[$key],
+                'jumlah_beli' => $value,
+                'harga_satuan' => $request->harga_satuan[$key],
+                'harga_total' => $request->harga_total[$key],
             ]);
-
-            // create new transaksi detail
-            foreach ($refund as $key => $value) {
-                TransaksiDetail::create([
-                    'transaksi_id' => $transaksi->id,
-                    'produk_id' => $request->produk_id[$key],
-                    'jumlah' => -$request->qty[$key],
-                    'harga_satuan_refund' => $request->harga_satuan_refund[$key],
-                ]);
-            }
-
-            // call function from KasirController called kurangiStokLogic
-            KasirController::kurangiStokLogic($transaksi);
         }
 
-        return redirect()->route('penjualan.index')->with('success', 'Transaksi berhasil direfund');
+        // self::hitungStokLogic($newTransaksi);
+        // $newTransaksi->is_counted = true;
+        // $newTransaksi->save();
+
+        // call hitungStokLogic from KasirController
+        KasirController::hitungStokLogic($newTransaksi, true);
+        $transaksi->is_counted = true;
+        $transaksi->save();
+
+        Bayar::create([
+            'transaksi_id' => $newTransaksi->id,
+            'harga_total' => $request->total_refund,
+            'bayar' => $request->total_refund,
+            'kembalian' => 0,
+            'hutang' => 0,
+            'is_refund' => true,
+        ]);
+
+        return redirect()->route('penjualan.index')->with('success', 'Refund berhasil.');
     }
 }

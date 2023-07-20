@@ -1,78 +1,39 @@
-@extends('layouts.app', ['title' => 'Edit Karyawan'])
+@extends('layouts.app', ['title' => 'Edit User'])
 
 @section('breadcrumb')
-<li class="breadcrumb-item"><a href="{{ route('karyawan.index') }}">Karyawan</a></li>
+<!-- <li class="breadcrumb-item">Gudang</li> -->
+<li class="breadcrumb-item"><a href="{{ route('karyawan.index') }}">User</a></li>
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col">
 
-        <div class="card card-primary card-outline">
+        <form action="{{ route('karyawan.update', $data->id) }}" method="post">
+            @csrf
+            @method('PUT')
+            <x-card title="Edit Data User">
 
-            <form action="{{ route('karyawan.update', $karyawan->id) }}" method="post">
-                @csrf
-                @method('PUT')
-                <div class="card-body">
-                    <h4 class="bg-primary">Data Karyawan</h4>
-                    <div class="row">
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="name">Nama Karyawan</label>
-                                <input name="name" value="{{ $karyawan->name }}" type="text" class="form-control" id="name" placeholder="Masukkan Nama Karyawan" required>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="alamat">Alamat</label>
-                                <input name="alamat" value="{{ $karyawan->alamat }}" type="text" class="form-control" id="alamat" placeholder="Masukkan Alamat" required>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label for="no_telp">No Telepon</label>
-                                <input name="no_telp" value="{{ $karyawan->no_telp }}" type="text" class="form-control" id="no_telp" placeholder="Masukkan No Telepon" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h4 class="mt-3 bg-primary">Data Login</h4>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="username">Username</label>
-                                <input name="username" value="{{ $karyawan->username }}" type="text" class="form-control" id="username" placeholder="Buat Username" required>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="password">Password</label>
-                                <input name="password" value="" type="password" class="form-control" id="password" placeholder="(isi jika ingin mengubah password)">
-                            </div>
-                        </div>
-                    </div>
-
-                    @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <h5><i class="icon fas fa-ban"></i> Error!</h5>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
+                <h4 class="bg-primary">Data User</h4>
+                <div class="row">
+                    <div class="col-md"><x-input name="nama" label="Nama User" type="text" :value="$data->nama" /></div>
+                    <div class="col-md-5"><x-input name="alamat" label="Alamat" type="text" :value="$data->alamat" /></div>
+                    <div class="col-md-3"><x-input name="telepon" label="No Telepon" type="number" :value="$data->telepon" /></div>
                 </div>
 
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Update</button>
-                    <button type="reset" class="btn btn-secondary">Reset</button>
+                <h4 class="bg-primary mt-3">Data Login</h4>
+                <div class="row">
+                    <div class="col-md"><x-input name="username" label="Username" type="text" :value="$data->username" /></div>
+                    <div class="col-md"><x-input name="password" label="Password Baru (opsional)" type="password" placeholder="asasd" /></div>
                 </div>
 
-            </form>
+                <x-slot name="footer">
+                    <x-button>Update</x-button>
+                    <x-button type="reset" color="secondary">Reset</x-button>
+                </x-slot>
 
-        </div>
+            </x-card>
+        </form>
 
     </div>
 </div>

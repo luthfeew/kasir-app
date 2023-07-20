@@ -9,6 +9,8 @@ use App\Http\Controllers\KasirController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\PrintController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,31 +30,35 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
-    Route::get('/buka_kasir', [HomeController::class, 'buka_kasir'])->name('buka_kasir');
-    Route::post('/buka_kasir', [HomeController::class, 'buka_kasir_store'])->name('buka_kasir.store');
-    Route::get('/tutup_kasir', [HomeController::class, 'tutup_kasir'])->name('tutup_kasir');
-    Route::post('/tutup_kasir', [HomeController::class, 'tutup_kasir_store'])->name('tutup_kasir.store');
+    Route::get('/buka_kasir', [HomeController::class, 'bukaKasir'])->name('buka_kasir');
+    Route::post('/buka_kasir', [HomeController::class, 'bukaKasirStore'])->name('buka_kasir.store');
+    Route::get('/tutup_kasir', [HomeController::class, 'tutupKasir'])->name('tutup_kasir');
+    Route::post('/tutup_kasir', [HomeController::class, 'tutupKasirStore'])->name('tutup_kasir.store');
 
     Route::get('/kasir/{id?}', [KasirController::class, 'index'])->name('kasir');
     Route::post('/kasir/bayar/{id?}', [KasirController::class, 'bayar'])->name('kasir.bayar');
     Route::post('/kasir/simpan/{id?}', [KasirController::class, 'simpan'])->name('kasir.simpan');
     Route::post('/kasir/hapus/{id?}', [KasirController::class, 'hapus'])->name('kasir.hapus');
+    Route::get('/kasir/bayar_hutang/{id}', [KasirController::class, 'bayarHutang'])->name('kasir.bayar_hutang');
 
     Route::resource('penjualan', PenjualanController::class);
     Route::get('/penjualan/{id}/refund', [PenjualanController::class, 'refund'])->name('penjualan.refund');
-    Route::post('/penjualan/{id}/refund', [PenjualanController::class, 'refund_store'])->name('penjualan.refund.store');
+    Route::post('/penjualan/{id}/refund', [PenjualanController::class, 'refundStore'])->name('penjualan.refund.store');
 
-    Route::get('/laporan/ringkasan_penjualan', [LaporanController::class, 'ringkasan_penjualan'])->name('laporan.ringkasan_penjualan');
-    Route::get('/laporan/top_report', [LaporanController::class, 'top_report'])->name('laporan.top_report');
-    Route::get('/laporan/tutup_kasir', [LaporanController::class, 'tutup_kasir'])->name('laporan.tutup_kasir');
-    Route::get('/laporan/kas_kasir', [LaporanController::class, 'kas_kasir'])->name('laporan.kas_kasir');
-    Route::get('/laporan/kas_kasir/create', [LaporanController::class, 'kas_kasir_create'])->name('laporan.kas_kasir.create');
-    Route::post('/laporan/kas_kasir/create', [LaporanController::class, 'kas_kasir_store'])->name('laporan.kas_kasir.store');
+    Route::get('/laporan/ringkasan_penjualan', [LaporanController::class, 'ringkasanPenjualan'])->name('laporan.ringkasan_penjualan');
+    Route::get('/laporan/top_report', [LaporanController::class, 'topReport'])->name('laporan.top_report');
+    Route::get('/laporan/tutup_kasir', [LaporanController::class, 'tutupKasir'])->name('laporan.tutup_kasir');
+    Route::get('/laporan/kas_kasir', [LaporanController::class, 'kasKasir'])->name('laporan.kas_kasir');
+    Route::get('/laporan/hutang', [LaporanController::class, 'hutang'])->name('laporan.hutang');
+    Route::get('/laporan/kas_kasir/create', [LaporanController::class, 'kasKasirCreate'])->name('laporan.kas_kasir.create');
+    Route::post('/laporan/kas_kasir/create', [LaporanController::class, 'kasKasirStore'])->name('laporan.kas_kasir.store');
 
     Route::resource('gudang/kategori', ProdukKategoriController::class);
     Route::resource('gudang/produk', ProdukController::class);
 
     Route::resource('karyawan', KaryawanController::class);
+    Route::resource('pelanggan', PelangganController::class);
 
-    Route::post('/test', [LaporanController::class, 'test'])->name('test');
+    Route::get('/test/{id}', [PrintController::class, 'printPesanan'])->name('test');
+    Route::get('/test2/{id}', [PrintController::class, 'printTutupKasir'])->name('test2');
 });

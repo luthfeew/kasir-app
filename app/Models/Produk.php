@@ -4,28 +4,43 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Produk extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'produk_kategori_id',
         'nama',
         'sku',
-        'stok',
         'harga_beli',
         'harga_jual',
+        'harga_pelanggan',
         'satuan',
-        'produk_kategori_id',
     ];
 
-    public function kategori()
+    // produk punya satu kategori
+    public function produkKategori()
     {
-        return $this->belongsTo(ProdukKategori::class, 'produk_kategori_id');
+        return $this->belongsTo(ProdukKategori::class);
     }
 
-    public function grosir()
+    // produk punya banyak inventaris
+    public function inventaris()
     {
-        return $this->hasMany(ProdukGrosir::class, 'produk_id');
+        return $this->hasMany(Inventaris::class);
+    }
+
+    // produk punya banyak produk grosir
+    public function produkGrosir()
+    {
+        return $this->hasMany(ProdukGrosir::class);
+    }
+
+    // produk punya banyak transaksi detail
+    public function transaksiDetail()
+    {
+        return $this->hasMany(TransaksiDetail::class);
     }
 }

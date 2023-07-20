@@ -13,7 +13,7 @@
                 <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
+                <a href="#" class="d-block">{{ Auth::user()->nama }}</a>
             </div>
         </div>
 
@@ -38,41 +38,8 @@
                     </a>
                 </li>
                 @if (Auth::user()->role == 'admin')
-                <li class="nav-item @if(Request::segment(1) == 'laporan') menu-open @endif">
-                    <a href="#" class="nav-link @if(Request::segment(1) == 'laporan') active @endif">
-                        <i class="nav-icon fas fa-book"></i>
-                        <p>
-                            Laporan
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('laporan.ringkasan_penjualan') }}" class="nav-link @if(Request::segment(2) == 'ringkasan_penjualan') active @endif">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Ringkasan Penjualan</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('laporan.top_report') }}" class="nav-link @if(Request::segment(2) == 'top_report') active @endif">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Top 10 Report</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('laporan.tutup_kasir') }}" class="nav-link @if(Request::segment(2) == 'tutup_kasir') active @endif">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Tutup Kasir</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('laporan.kas_kasir') }}" class="nav-link @if(Request::segment(2) == 'kas_kasir') active @endif">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kas Kasir</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+
+                @endif
                 @endif
                 <li class="nav-item @if(Request::segment(1) == 'gudang') menu-open @endif">
                     <a href="#" class="nav-link @if(Request::segment(1) == 'gudang') active @endif">
@@ -97,18 +64,64 @@
                         </li>
                     </ul>
                 </li>
-                @endif
 
-                <li class="nav-header">LAINNYA</li>
                 @if (Auth::user()->role == 'admin')
+                <li class="nav-item @if(Request::segment(1) == 'laporan') menu-open @endif">
+                    <a href="#" class="nav-link @if(Request::segment(1) == 'laporan') active @endif">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>
+                            Laporan
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('laporan.ringkasan_penjualan') }}" class="nav-link @if(Request::segment(2) == 'ringkasan_penjualan') active @endif">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Ringkasan Penjualan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('laporan.top_report') }}" class="nav-link @if(Request::segment(2) == 'top_report') active @endif">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Top Report</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('laporan.tutup_kasir') }}" class="nav-link @if(Request::segment(2) == 'tutup_kasir') active @endif">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Tutup Kasir</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('laporan.kas_kasir') }}" class="nav-link @if(Request::segment(2) == 'kas_kasir') active @endif">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Kas Kasir</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('laporan.hutang') }}" class="nav-link @if(Request::segment(2) == 'hutang') active @endif">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Hutang</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('pelanggan.index') }}" class="nav-link @if(Request::segment(1) == 'pelanggan') active @endif">
+                        <i class="nav-icon fas fa-user-tag"></i>
+                        <p>Pelanggan</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{ route('karyawan.index') }}" class="nav-link @if(Request::segment(1) == 'karyawan') active @endif">
                         <i class="nav-icon fas fa-users"></i>
-                        <p>Karyawan</p>
+                        <p>User</p>
                     </a>
                 </li>
                 @endif
 
+                <li class="nav-header">LAINNYA</li>
                 @if (Auth::user()->sesi()->where('status', 'mulai')->whereDate('waktu_mulai', now())->first())
                 <li class="nav-item">
                     <a href="{{ route('tutup_kasir') }}" class="nav-link @if(Request::segment(1) == 'tutup_kasir') active @endif">

@@ -2,33 +2,20 @@
 
 @section('content')
 <div class="row">
+    <div class="col">
 
-    <div class="col-sm">
-        <div class="card card-primary">
-            <!-- <div class="card-header">
-                <h3 class="card-title">Tutup Kasir</h3>
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            </div> -->
+        <form action="{{ route('tutup_kasir.store') }}" method="post">
+            @csrf
+            <x-card title="Tutup Kasir">
+                <x-input type="number" name="saldo_akhir" label="Saldo Akhir" />
+                <h5>Saldo Akhir Sistem: Rp. {{ number_format($saldoAkhir, 0, ',', '.') }}</h5>
+                <x-slot name="footer">
+                    <x-button>Simpan</x-button>
+                    <x-button type="reset" color="secondary">Reset</x-button>
+                </x-slot>
+            </x-card>
+        </form>
 
-            <form method="post" action="{{ route('tutup_kasir.store') }}">
-                @csrf
-                <div class="card-body card-primary card-outline">
-                    <div class="form-group">
-                        <label for="saldo_akhir">Saldo Akhir (Rp)</label>
-                        <input name="saldo_akhir" type="number" class="form-control form-control-lg" id="saldo_akhir" placeholder="Masukkan Saldo Akhir" required>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Tutup</button>
-                    <button type="reset" class="btn btn-secondary">Reset</button>
-                </div>
-            </form>
-
-        </div>
     </div>
-
 </div>
 @endsection

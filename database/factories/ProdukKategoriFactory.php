@@ -17,7 +17,8 @@ class ProdukKategoriFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nama' => $this->faker->unique()->word(),
+            'urutan' => $this->faker->unique()->numberBetween(1, 100),
         ];
     }
 }

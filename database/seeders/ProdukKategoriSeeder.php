@@ -26,6 +26,14 @@ class ProdukKategoriSeeder extends Seeder
                 'nama' => 'Snack',
                 'urutan' => 3,
             ],
+            [
+                'nama' => 'Perlengkapan',
+                'urutan' => 4,
+            ],
+            [
+                'nama' => 'Lainnya',
+                'urutan' => 5,
+            ],
         ]);
     }
 }

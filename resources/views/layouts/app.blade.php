@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
   <!-- Custom CSS -->
   @yield('css')
+  @stack('css')
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
   <!-- Livewire -->
@@ -70,6 +71,7 @@
   <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
   <!-- Custom JS -->
   @yield('js')
+  @stack('js')
   <!-- Livewire -->
   @livewireScripts
 </body>

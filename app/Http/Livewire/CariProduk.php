@@ -9,10 +9,12 @@ class CariProduk extends Component
 {
     public $cari = '';
 
+    protected $listeners = ['enter'];
+
     public function render()
     {
         return view('livewire.cari-produk', [
-            'produks' => $this->cari === '' ? [] : Produk::where('stok', '>', 0)
+            'produks' => $this->cari === '' ? [] : Produk::whereRelation('inventaris', 'stok', '>', 0)
                 ->where(function ($query) {
                     $query->where('nama', 'like', '%' . $this->cari . '%')
                         ->orWhere('sku', 'like', '%' . $this->cari . '%');
@@ -21,9 +23,15 @@ class CariProduk extends Component
         ]);
     }
 
-    public function tambahProduk($id)
+    public function tambah($id)
     {
-        $this->emit('tambahProduk', $id);
+        $this->emit('passTambah', $id);
+        $this->cari = '';
+    }
+
+    public function enter($nama)
+    {
+        $this->emit('passEnter', $nama);
         $this->cari = '';
     }
 }

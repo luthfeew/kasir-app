@@ -1,227 +1,275 @@
 @extends('layouts.app', ['title' => 'Kasir'])
 
-@section('js')
-<script>
-    // on load
-    document.addEventListener('DOMContentLoaded', function() {
-        // jika tidak ada id atau hargaTotal1 = 0 maka tambahankan class d-none pada tombol simpan dan hapus
-        if (!'{{ $id }}' && document.getElementById('hargaTotal1').innerHTML == 0) {
-            document.getElementById('aksi').classList.add('d-none');
-        }
-    });
-
-    // buat listener jika hargatotal1 tidak sama dengan 0 maka tampilkan tombol bayar
-    var hargaTotal1 = document.getElementById('hargaTotal1');
-    hargaTotal1.addEventListener('DOMSubtreeModified', function() {
-        if (hargaTotal1.innerHTML != 0) {
-            document.getElementById('aksi').classList.remove('d-none');
-        } else {
-            document.getElementById('aksi').classList.add('d-none');
-        }
-    });
-
-    function showButton(index) {
-        document.getElementById('button-' + index).classList.remove('d-none');
-    }
-
-    function showBtnPelanggan() {
-        document.getElementById('btn-pelanggan').classList.remove('d-none');
-    }
-
-    function copyHargaTotal() {
-        var hargaTotal = document.getElementById('hargaTotal1').innerHTML;
-
-        // buat format rupiah
-        var reverse = hargaTotal.toString().split('').reverse().join(''),
-            ribuan = reverse.match(/\d{1,3}/g);
-        ribuan = ribuan.join('.').split('').reverse().join('');
-        document.getElementById('hargaTotal2').innerHTML = ribuan;
-
-        // copy value hargaTotal1 ke hargaTotal3
-        document.getElementById('hargaTotal3').value = hargaTotal;
-        document.getElementById('hargaTotal4').value = hargaTotal;
-    }
-
-    function hitungKembalian() {
-        var hargaTotal = document.getElementById('hargaTotal1').innerHTML;
-        var bayar = document.getElementById('bayar').value;
-
-        // convert hargaTotal dan bayar ke number
-        hargaTotal = parseInt(hargaTotal.replace(/\./g, ''));
-        bayar = parseInt(bayar.replace(/\./g, ''));
-
-        // jika bayar lebih dari sama dengan harga total maka tampilkan tombol bayar dan hitung kembalian
-        if (bayar >= hargaTotal) {
-            document.getElementById('button-bayar').disabled = false;
-
-            var kembalian = bayar - hargaTotal;
-
-            // buat format rupiah
-            var reverse = kembalian.toString().split('').reverse().join(''),
-                ribuan = reverse.match(/\d{1,3}/g);
-            ribuan = ribuan.join('.').split('').reverse().join('');
-            document.getElementById('kembalian').innerHTML = ribuan;
-        } else {
-            document.getElementById('button-bayar').disabled = true;
-        }
-    }
-</script>
-<script>
-    var timeDisplay = document.getElementById("time");
-
-    function refreshTime() {
-        var dateString = new Date().toLocaleString("id-ID", {
-            timeZone: "Asia/Jakarta"
-        });
-        var formattedString = dateString.replace(", ", " - ");
-        timeDisplay.innerHTML = formattedString;
-    }
-
-    setInterval(refreshTime, 1000);
-</script>
-@endsection
-
 @section('content')
 <div class="row">
-
-    <div class="col-xl">
-        <div class="card card-primary card-outline">
-            <div class="card-header">
-                <h3 class="card-title">Cari produk</h3>
-
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-
-                <livewire:cari-produk />
-
-            </div>
-        </div>
-
-        <div class="card card-primary card-outline collapsed-card">
-            <div class="card-header">
-                <h3 class="card-title">Transaksi Pending</h3>
-
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body table-responsive p-0">
-
-                <table class="table table-hover text-nowrap">
-                    <thead>
-                        <tr>
-                            <th>No Transaksi</th>
-                            <th>Nama Pelanggan</th>
-                            <th>Waktu</th>
-                            <th>Total</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($transaksi_pending as $item)
-                        <tr>
-                            <td>{{ $item->id }}</td>
-                            <td>{{ $item->nama_pelanggan ?? '-' }}</td>
-                            <td>{{ $item->updated_at }}</td>
-                            <td>{{ $item->harga_total ?? '0' }}</td>
-                            <td>
-                                <a href="{{ route('kasir', $item->id) }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center">Tidak ada data</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-
-            </div>
-        </div>
+    <div class="col-xl-4">
+        <x-card title="Cari Produk">
+            <livewire:cari-produk />
+        </x-card>
     </div>
+    <div class="col-xl-8">
+        <x-card title="Rincian Pesanan">
+            <livewire:pesanan :transaksiId="$transaksiId" />
 
-    <div class="col-xl">
-        <div class="card card-primary card-outline">
-            <div class="card-header">
-                <h3 class="card-title">Rincian Pesanan</h3>
-
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-
-                <livewire:pesanan :transaksi_id="$id">
-
-            </div>
-            <div id="aksi" class="card-footer">
-                <button onclick="copyHargaTotal()" type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-xl">
-                    <i class="far fa-credit-card"></i> Bayar
-                </button>
-
-                <a class="btn btn-primary" href="{{ route('kasir.simpan', $id) }}" onclick="copyHargaTotal(); event.preventDefault(); document.getElementById('simpan-form').submit();">
-                    <i class="fas fa-download"></i> Simpan
-                </a>
-                <form id="simpan-form" action="{{ route('kasir.simpan', $id) }}" method="POST" style="display: none;">
-                    @csrf
-                    <input type="number" name="harga_total" id="hargaTotal4">
-                </form>
-
-                <a class="btn btn-danger" href="{{ route('kasir.hapus', $id) }}" onclick="event.preventDefault(); document.getElementById('hapus-form').submit();">
-                    <i class="fas fa-trash"></i> Hapus
-                </a>
-                <form id="hapus-form" action="{{ route('kasir.hapus', $id) }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            </div>
-        </div>
+            <x-slot name="footer">
+                <x-button onclick="copyTotal()" data-toggle="modal" data-target="#modal-bayar">Bayar</x-button>
+                <x-button color="secondary" data-toggle="modal" data-target="#modal-simpan">Simpan</x-button>
+                <x-button color="danger" data-toggle="modal" data-target="#modal-hapus">Hapus</x-button>
+            </x-slot>
+        </x-card>
     </div>
+</div>
 
-    <div class="modal fade" id="modal-xl">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Bayar</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+<div class="row">
+    <div class="col-xl-6">
+        <x-card title="Transaksi Pending">
+            @env('local')
+            {{ $transaksiPending }}
+            @endenv
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No Transaksi</th>
+                        <th>Nama Pembeli</th>
+                        <th>Tanggal</th>
+                        <th>Total Tagihan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($transaksiPending as $item)
+                    <tr>
+                        <td>{{ $item->kode }}</td>
+                        <td>{{ $item->pelanggan->nama ?? $item->nama_pembeli }}</td>
+                        <td>{{ $item->updated_at }}</td>
+                        <td>@rupiah($item->transaksi_detail->sum('harga_total'))</td>
+                        <td>
+                            <a href="{{ route('kasir', $item->id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada data</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </x-card>
+    </div>
+    <div class="col-xl-6">
+        <x-card title="Transaksi Hutang">
+            @env('local')
+            {{ $transaksiHutang }}
+            @endenv
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No Transaksi</th>
+                        <th>Nama Pembeli</th>
+                        <th>Tanggal</th>
+                        <th>Total Hutang</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($transaksiHutang as $item)
+                    <tr>
+                        <td>{{ $item->kode }}</td>
+                        <td>{{ $item->pelanggan->nama ?? $item->nama_pembeli }}</td>
+                        <td>{{ $item->updated_at }}</td>
+                        <td>@rupiah($item->bayar->hutang)</td>
+                        <td>
+                            <a href="{{ route('kasir.bayar_hutang', $item->id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada data</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+        </x-card>
+    </div>
+</div>
+
+<!-- MODAL BAYAR -->
+<div class="modal fade" id="modal-bayar">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Bayar Pesanan</h4>
+            </div>
+            <form action="{{ route('kasir.bayar', $transaksiId) }}" method="post">
+                @csrf
                 <div class="modal-body">
-                    <h3>
-                        <small class="text-muted">Total:</small>
-                        Rp <span id="hargaTotal2">0</span>
-                    </h3>
-                    <h3>
-                        <small class="text-muted">Bayar:</small>
-                        Rp <input type="number" id="bayar" onkeyup="hitungKembalian()">
-                    </h3>
-                    <h3>
-                        <small class="text-muted">Kembalian:</small>
-                        Rp <span id="kembalian">0</span>
-                    </h3>
+                    <div class="col-8">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th style="width:50%">Total Tagihan:</th>
+                                        <td>
+                                            <h3><span id="tagihanView"></span></h3>
+                                            <input type="hidden" name="tagihan" id="tagihan">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bayar:</th>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="mr-2">
+                                                    <h3>Rp</h3>
+                                                </div>
+                                                <div>
+                                                    <input type="text" onkeyup="hitungKembalian()" name="" id="bayarView" class="form-control form-control-lg">
+                                                    <input type="hidden" name="bayar" id="bayar">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Kembalian:</th>
+                                        <td>
+                                            <h3>Rp <span id="kembalianView"></span></h3>
+                                            <input type="hidden" name="kembalian" id="kembalian">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Hutang:</th>
+                                        <td>
+                                            <h3>Rp <span id="hutangView"></span></h3>
+                                            <input type="hidden" name="hutang" id="hutang">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                    <form action="{{ route('kasir.bayar', $id) }}" method="post">
-                        @csrf
-                        <input hidden type="number" name="harga_total" id="hargaTotal3">
-                        <button disabled id="button-bayar" type="submit" class="btn btn-success"><i class="far fa-credit-card"></i> Bayar</button>
-                    </form>
+                    <button type="submit" class="btn btn-primary">Bayar</button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-
 </div>
+
+<!-- MODAL SIMPAN -->
+<div class="modal fade" id="modal-simpan">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Simpan Pesanan</h4>
+            </div>
+            <div class="modal-body">
+                <p>Anda yakin ingin menyimpan pesanan ini?</p>
+            </div>
+            <form action="{{ route('kasir.simpan', $transaksiId) }}" method="post">
+                @csrf
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tidak</button>
+                    <button type="submit" class="btn btn-primary">Ya</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL HAPUS -->
+<div class="modal fade" id="modal-hapus">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Hapus Pesanan</h4>
+            </div>
+            <div class="modal-body">
+                <p>Anda yakin ingin menghapus pesanan ini?</p>
+            </div>
+            <form action="{{ route('kasir.hapus', $transaksiId) }}" method="post">
+                @csrf
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tidak</button>
+                    <button type="submit" class="btn btn-danger">Ya</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
+
+@push('js')
+<script>
+    function onlyNumber(value) {
+        return value.replace(/\D/g, '');
+    }
+
+    function copyTotal() {
+        var hutangSebelumnya = document.getElementById('hutangSebelumnya');
+        var tagihan = document.getElementById('total').innerHTML;
+        // jika ada elemen hutangSebelumnya maka tambahkan hutangSebelumnya ke tagihan
+        if (hutangSebelumnya != null) {
+            tagihan = parseInt(onlyNumber(tagihan)) + parseInt(hutangSebelumnya.value);
+            document.getElementById('tagihan').value = tagihan;
+            document.getElementById('tagihanView').innerHTML = "Rp " + tagihan.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        } else {
+            document.getElementById('tagihan').value = onlyNumber(tagihan);
+            document.getElementById('tagihanView').innerHTML = tagihan;
+        }
+
+    }
+
+    var bayarView = document.getElementById('bayarView');
+    bayarView.addEventListener('keyup', function(e) {
+        // tambahkan 'Rp.' pada saat form di ketik
+        // gunakan fungsi formatRupiah() untuk mengubah angka yang di ketik menjadi format angka
+        bayarView.value = formatRupiah(this.value, '');
+    });
+
+    /* Fungsi formatRupiah */
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        // tambahkan titik jika yang di input sudah menjadi angka ribuan
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? '' + rupiah : '');
+    }
+
+    function hitungKembalian() {
+        document.getElementById('bayar').value = onlyNumber(bayarView.value);
+        var tagihan = document.getElementById('tagihan').value;
+        var bayar = document.getElementById('bayar').value;
+        var kembalian = bayar - tagihan;
+        // alert(kembalian);
+        if (kembalian < 0) {
+            document.getElementById('kembalian').value = 0;
+            document.getElementById('kembalianView').innerHTML = 0;
+            document.getElementById('hutang').value = Math.abs(kembalian);
+            document.getElementById('hutangView').innerHTML = Math.abs(kembalian).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        } else {
+            document.getElementById('kembalian').value = kembalian;
+            document.getElementById('kembalianView').innerHTML = kembalian.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            document.getElementById('hutang').value = 0;
+            document.getElementById('hutangView').innerHTML = 0;
+        }
+    }
+</script>
+@endpush
