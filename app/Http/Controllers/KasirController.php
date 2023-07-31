@@ -86,7 +86,12 @@ class KasirController extends Controller
         ]);
 
         // PRINT_HERE
-        PrintController::printPesanan($transaksi->id);
+        // PrintController::printPesanan($transaksi->id);
+        try {
+            PrintController::printPesanan($transaksi->id);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
 
         return redirect()->route('kasir')->with('success', 'Transaksi berhasil dibayar.');
     }

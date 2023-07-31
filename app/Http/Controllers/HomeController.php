@@ -94,8 +94,13 @@ class HomeController extends Controller
             ]);
 
             // PRINT_HERE
-            PrintController::printTutupKasir($sesi->id);
-            
+            // PrintController::printTutupKasir($sesi->id);
+            try {
+                PrintController::printTutupKasir($sesi->id);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+
         } else {
             return redirect()->route('dashboard')->with('error', 'Anda belum membuka kasir.');
         }
